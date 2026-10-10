@@ -58,7 +58,6 @@ Column types: 4 integer, 6 decimal, 8 text, 2 date-time, 2 boolean. Missing valu
 | Dashboard | React, TypeScript, Vite |
 | Visualisation | Hand-built SVG and Canvas, d3 (scales and shapes) |
 | Motion | Motion (animation library) |
-| Typography | Bricolage Grotesque, Inter, JetBrains Mono |
 | Hosting | Vercel |
 
 ---
