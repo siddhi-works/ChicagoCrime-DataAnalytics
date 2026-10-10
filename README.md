@@ -7,16 +7,50 @@ Live demo: **https://chicagocrime-data-analytics.vercel.app/**
 
 ---
 
-## Why this dashboard is different
+## Overview
 
-Most crime dashboards are a wall of charts that assumes you already know what to look for. This one is built around the person using it.
+An interactive dashboard that turns **1,048,575 Chicago police crime reports** into answers. Every number comes from a Python analysis, every chart can be filtered, and every finding states its method and its limits.
 
-- **Easy to start.** Open it and every headline number is on one page: 8 KPI cards and 10 charts, each clearly labelled with its question. No setup, no login, no manual.
-- **Easy to explore.** Four filters (crime type, district, arrest, domestic) update every number, chart and map at the same time. Clicking a bar filters the whole page.
-- **Easy to understand.** Findings are written in plain language, as short chapters, with the method and the caveat next to every claim.
-- **Easy to trust.** A dedicated Data Trust section shows where the data came from, every cleaning step with its count, what each metric means, and where the data falls short.
-- **Easy to ask.** A built-in assistant, Detective Dot, answers questions about the project and the data in plain English, using live calculations on the same data you see on screen.
-- **Honest by design.** Comparisons are adjusted for crime mix, models are tested on months they have never seen, and incomplete data is flagged rather than hidden.
+It is easy to start (all 8 KPIs and 10 charts are on one page), easy to explore (four filters update everything at once), and easy to trust (a Data Trust section shows exactly how each number was made).
+
+---
+
+## Data pipeline
+
+```mermaid
+flowchart LR
+    A["Load<br/>1,048,575 rows"] --> B["Repair<br/>424,638 dates"]
+    B --> C["Clean<br/>0 rows deleted"]
+    C --> D["Engineer<br/>time, season, category"]
+    D --> E["Analyse<br/>statistics + models"]
+    E --> F["Export<br/>JSON + data cube"]
+    F --> G["Validate<br/>44 checks"]
+    G --> H["Dashboard<br/>React"]
+```
+
+---
+
+## Data
+
+| | |
+|---|---|
+| **Source** | Crime reports supplied by the TECHVERSE organisers (appears to be an extract of the City of Chicago "Crimes - 2001 to Present" data) |
+| **Records** | 1,048,575 (one row per reported crime) |
+| **Columns** | 22 in the original file, 33 after cleaning and feature engineering |
+| **Period** | 2001 to 2026 (dense coverage: Apr 2015 - Jul 2017 and Oct 2025 - Aug 2026) |
+| **Categories** | 33 crime types, 24 police districts, 306 police beats |
+
+**Data types (22 original columns)**
+
+| Type | Columns | Fields |
+|---|---|---|
+| Integer | 4 | ID, Beat, District, Year |
+| Decimal | 6 | Latitude, Longitude, X Coordinate, Y Coordinate, Ward, Community Area |
+| Text | 8 | Case Number, Block, IUCR, Primary Type, Description, Location Description, FBI Code, Location |
+| Date-time | 2 | Date, Updated On (stored as a mix of text and Excel dates, repaired) |
+| Boolean | 2 | Arrest, Domestic |
+
+**Missing values:** coordinates 31.3%, community area 1.8%, ward 1.6%, location description 0.8%. No other column has gaps.
 
 ---
 
@@ -28,24 +62,16 @@ Most crime dashboards are a wall of charts that assumes you already know what to
 
 ---
 
-## Features
+## What we built
 
-**Dashboard.** All 8 competition KPIs and 10 required visualisations on a single page, with filters, hover details, a table view for every chart, and a definitions and assumptions panel.
-
-**Story.** Deeper findings organised as four chapters: When, Arrests, What and where, and Then versus now. Examples:
-- Summer sees about 17% more crime per day than winter.
-- Weekend nights run about 69% above weekday nights.
-- About 86% of the evening-versus-night arrest gap is explained by crime type rather than time of day.
-
-**District map.** About 2,400 map patches of roughly 550 m each, coloured by their police district's crimes, arrest rate, violent share, domestic share or night share. Selecting a district shows its totals, its main crime types, and whether its arrest rate is above or below what its mix of crimes predicts. Boundaries are derived from the data's own coordinates, not invented.
-
-**Detective Dot (assistant).** Answers general questions (what is a KPI, how was this calculated, what are the main findings) and questions specific to the tab you are on. It can compare two crime types or districts, explain any chart, and share data facts. It uses only this project's analysis and never makes up numbers.
-
-**Data Trust.** Source, processing pipeline, metric definitions, statistical methods, data-quality findings, cleaning log, assumptions and limitations, presented in a single guided section.
-
-**Welcome experience.** A night-city introduction with a moving skyline and a flashlight that follows the cursor over the real crime map, setting the tone for the rest of the site.
-
-**Verified numbers.** Every figure is computed in Python and checked by 44 automated tests. The website re-checks its own calculations when it loads and displays a verification badge.
+| Feature | What we did | Result |
+|---|---|---|
+| **Dashboard** | All 8 competition KPIs and 10 required charts on one page, with 4 filters (crime type, district, arrest, domestic) that recalculate every number together | 8 KPIs, 10 charts, one consistent set of numbers |
+| **Story** | Compared time, arrests and places with confidence ranges and mix-adjusted rates | Summer has 17% more crime per day than winter (788 vs 674). Weekend nights run 69% above weekday nights. |
+| **Fair arrest analysis** | Standardised arrest rates for crime type, then tested a model on months it had never seen | The evening-vs-night arrest gap falls from 7.3 to 1.0 points once crime type is accounted for (86% explained). Model score: AUC 0.86. |
+| **District map** | Coloured about 2,400 map patches (~550 m) by their police district's crimes, arrest rate, violent, domestic or night share | District 11 has the most crimes (69,214) and a 38.3% arrest rate, but its index is 0.98, so its crime mix explains the rate. |
+| **Detective Dot** | A built-in assistant that answers from the project's own analysis and recalculates live on the filtered data | Compares crime types or districts, explains any chart, and never invents numbers |
+| **Data Trust** | Documented the source, every cleaning step, metric definitions, methods and limitations | 424,638 swapped dates repaired, 0 rows deleted, 44 automated checks passed |
 
 ---
 
@@ -59,28 +85,7 @@ Most crime dashboards are a wall of charts that assumes you already know what to
 | Visualisation | Hand-built SVG and Canvas, d3 (scales and shapes) |
 | Motion | Motion (animation library) |
 | Typography | Bricolage Grotesque, Inter, JetBrains Mono |
-| Hosting | Vercel (static site) |
-
-The project has no server or database. The analysis runs once and produces static files, so the dashboard is fast and works offline.
-
----
-
-## Data pipeline
-
-1. **Load.** The source workbook is read in read-only mode and fingerprinted (SHA-256) so it is provably unchanged.
-2. **Repair.** 424,638 dates had their month and day swapped by Excel; these are corrected and validated three independent ways.
-3. **Clean.** Impossible coordinates and empty values are handled without deleting any rows or guessing missing data.
-4. **Engineer.** Time of day, season and crime category are added using the competition's exact definitions.
-5. **Analyse.** Dense reporting periods are identified, then statistics, standardised comparisons and models are run with confidence intervals and hold-out testing.
-6. **Export.** Results are written as JSON files plus a compact pre-aggregated data cube.
-7. **Validate.** 44 automated checks confirm totals, orderings, handout values and agreement between the cube and the raw data.
-8. **Present.** The React dashboard reads the exported files and recalculates live from the cube when filters change.
-
----
-
-## Data
-
-The dataset was supplied by the TECHVERSE organisers and is not included in this repository. It appears to be an extract of the City of Chicago "Crimes - 2001 to Present" data. The file is a partial slice of the full table, so trend analysis is restricted to the two periods that are densely populated (April 2015 to July 2017, and October 2025 to August 2026).
+| Hosting | Vercel |
 
 ---
 
