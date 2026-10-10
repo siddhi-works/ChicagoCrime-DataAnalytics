@@ -242,7 +242,7 @@ export default function App() {
             </AnimatePresence>
           </main>
           <Chat ctx={{ b, f, r, base, tab, story, district }} goTab={(t) => setTab(t)} />
-          <footer className="wrap mini-foot">Team Moleculens · Chicago Crime Branch · every figure computed in Python from the supplied workbook (never modified) · TECHVERSE 2026 Grand Prize Winner, Ajeenkya DY Patil</footer>
+          <footer className="wrap mini-foot">Team Moleculens · Chicago Crime Branch · every figure computed in Python from the supplied workbook (never modified) · TECHVERSE 2026 Grand Prize Winner, Ajeenkya DY Patil University</footer>
         </motion.div>
       )}
     </div>

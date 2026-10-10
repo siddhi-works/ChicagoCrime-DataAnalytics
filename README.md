@@ -1,7 +1,7 @@
 # Chicago Crime Analytics Dashboard
 
 > ### 🏆 TECHVERSE 2026 · Grand Prize Winner
-> **Ajeenkya DY Patil** · built by **Team Moleculens**
+> **Ajeenkya DY Patil University** · built by **Team Moleculens**
 
 An interactive dashboard that turns **1,048,575 Chicago police crime reports** into clear, filterable answers.
 
