@@ -1,55 +1,91 @@
-<h1 align="center">🏆 TECHVERSE 2026</h1>
-<h1 align="center">GRAND PRIZE WINNER</h1>
-<h2 align="center">Ajeenkya DY Patil</h2>
-<p align="center"><b>Team Moleculens</b></p>
+# Chicago Crime Analytics Dashboard
 
-<p align="center">
-  <a href="https://chicagocrime-data-analytics.vercel.app/"><b>🌐 Live demo → chicagocrime-data-analytics.vercel.app</b></a>
-</p>
+**TECHVERSE 2026 Grand Prize Winner | Ajeenkya DY Patil**
+Made by **Team Moleculens**
+
+Live demo: **https://chicagocrime-data-analytics.vercel.app/**
 
 ---
 
-# Chicago Crime Branch
+## Why this dashboard is different
 
-An interactive data story built on **1,048,575 Chicago police crime reports**: part dashboard, part detective case file.
+Most crime dashboards are a wall of charts that assumes you already know what to look for. This one is built around the person using it.
 
-## KPIs at a glance
+- **Easy to start.** Open it and every headline number is on one page: 8 KPI cards and 10 charts, each clearly labelled with its question. No setup, no login, no manual.
+- **Easy to explore.** Four filters (crime type, district, arrest, domestic) update every number, chart and map at the same time. Clicking a bar filters the whole page.
+- **Easy to understand.** Findings are written in plain language, as short chapters, with the method and the caveat next to every claim.
+- **Easy to trust.** A dedicated Data Trust section shows where the data came from, every cleaning step with its count, what each metric means, and where the data falls short.
+- **Easy to ask.** A built-in assistant, Detective Dot, answers questions about the project and the data in plain English, using live calculations on the same data you see on screen.
+- **Honest by design.** Comparisons are adjusted for crime mix, models are tested on months they have never seen, and incomplete data is flagged rather than hidden.
 
-| Total crimes | Arrest rate | Domestic | Crime types | Crimes in 2016 | Avg / month | Night-time | Violent |
+---
+
+## Key figures
+
+| Total crimes | Arrest rate | Domestic | Crime types | Crimes in 2016 | Average per month | Night-time | Violent |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| **1,048,575** | **20.5%** | **18.3%** | **33** | **268,944** | **22,421** | **17.7%** | **29.2%** |
-
-All 8 KPI cards and all 10 required charts are on one dashboard page, labelled with their handout numbers.
-
-## What makes us stand out
-
-### 🎬 A cinematic welcome
-A night-city skyline, drifting crime-scene tape, a police-light glow and a flashlight that follows your cursor across the real crime map. A true-crime look runs through the whole site.
-
-### 🎛️ Filters that move everything at once
-Filter by crime type, district, arrest and domestic. Every KPI, chart and map recalculates together from one compact data cube, instantly and offline, so the numbers always agree. Click a bar and the whole page follows.
-
-### 📖 Story mode
-Findings are written as short chapters: **When**, **Arrests**, **What & where**, **Then vs now**. Each has the method and the caveat next to it.
-- Summer has about **17% more** crime than winter.
-- Weekend nights run about **69% above** weekday nights.
-- About **86%** of the evening-vs-night arrest gap is explained by crime type, not time.
-
-### 🗺️ A real district map
-Roughly 2,400 patches of the city, each coloured by its police district's crimes, arrest rate, violent, domestic or night share. Pick a district for its totals, top crime types and whether its arrest rate is above or below what its crime mix predicts. No invented boundaries; everything is built from the data's own coordinates.
-
-### 🔎 Detective Dot, the built-in assistant
-Ask in plain language: *"Compare theft and battery"*, *"Tell me about District 11"*, *"Which month had the most crime?"*, *"What does Q9 show?"*. Dot answers from the project's own analysis and recalculates live on the same data, so answers follow your filters. It also tells fun facts and rotates its suggested questions for every tab. It never invents numbers.
-
-### 🛡️ Data trust, not just charts
-A dedicated tab shows where the data came from, every cleaning step with counts, what each metric means, the methods used, the data-quality problems we found, and our limitations. We repaired **424,638 swapped dates**, never guessed missing values, and never deleted a row.
-
-### ✅ Numbers you can verify
-Every figure is computed in Python and double-checked by **44 automatic checks**. The website re-checks its own maths on load and shows a **"Verified"** badge. The original dataset was never modified.
-
-### ⚖️ Honest by design
-Fair, mix-adjusted comparisons instead of misleading raw rates, models tested on months they never saw, and clear flags where the data is incomplete. We say what the data can't tell you.
+| 1,048,575 | 20.5% | 18.3% | 33 | 268,944 | 22,421 | 17.7% | 29.2% |
 
 ---
 
-<p align="center"><b>TECHVERSE 2026 Grand Prize Winner · Ajeenkya DY Patil · Team Moleculens</b></p>
+## Features
+
+**Dashboard.** All 8 competition KPIs and 10 required visualisations on a single page, with filters, hover details, a table view for every chart, and a definitions and assumptions panel.
+
+**Story.** Deeper findings organised as four chapters: When, Arrests, What and where, and Then versus now. Examples:
+- Summer sees about 17% more crime per day than winter.
+- Weekend nights run about 69% above weekday nights.
+- About 86% of the evening-versus-night arrest gap is explained by crime type rather than time of day.
+
+**District map.** About 2,400 map patches of roughly 550 m each, coloured by their police district's crimes, arrest rate, violent share, domestic share or night share. Selecting a district shows its totals, its main crime types, and whether its arrest rate is above or below what its mix of crimes predicts. Boundaries are derived from the data's own coordinates, not invented.
+
+**Detective Dot (assistant).** Answers general questions (what is a KPI, how was this calculated, what are the main findings) and questions specific to the tab you are on. It can compare two crime types or districts, explain any chart, and share data facts. It uses only this project's analysis and never makes up numbers.
+
+**Data Trust.** Source, processing pipeline, metric definitions, statistical methods, data-quality findings, cleaning log, assumptions and limitations, presented in a single guided section.
+
+**Welcome experience.** A night-city introduction with a moving skyline and a flashlight that follows the cursor over the real crime map, setting the tone for the rest of the site.
+
+**Verified numbers.** Every figure is computed in Python and checked by 44 automated tests. The website re-checks its own calculations when it loads and displays a verification badge.
+
+---
+
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Analysis | Python 3.13, pandas, NumPy, SciPy, scikit-learn |
+| Data handling | openpyxl, PyArrow (Parquet), Pydantic |
+| Dashboard | React, TypeScript, Vite |
+| Visualisation | Hand-built SVG and Canvas, d3 (scales and shapes) |
+| Motion | Motion (animation library) |
+| Typography | Bricolage Grotesque, Inter, JetBrains Mono |
+| Hosting | Vercel (static site) |
+
+The project has no server or database. The analysis runs once and produces static files, so the dashboard is fast and works offline.
+
+---
+
+## Data pipeline
+
+1. **Load.** The source workbook is read in read-only mode and fingerprinted (SHA-256) so it is provably unchanged.
+2. **Repair.** 424,638 dates had their month and day swapped by Excel; these are corrected and validated three independent ways.
+3. **Clean.** Impossible coordinates and empty values are handled without deleting any rows or guessing missing data.
+4. **Engineer.** Time of day, season and crime category are added using the competition's exact definitions.
+5. **Analyse.** Dense reporting periods are identified, then statistics, standardised comparisons and models are run with confidence intervals and hold-out testing.
+6. **Export.** Results are written as JSON files plus a compact pre-aggregated data cube.
+7. **Validate.** 44 automated checks confirm totals, orderings, handout values and agreement between the cube and the raw data.
+8. **Present.** The React dashboard reads the exported files and recalculates live from the cube when filters change.
+
+---
+
+## Data
+
+The dataset was supplied by the TECHVERSE organisers and is not included in this repository. It appears to be an extract of the City of Chicago "Crimes - 2001 to Present" data. The file is a partial slice of the full table, so trend analysis is restricted to the two periods that are densely populated (April 2015 to July 2017, and October 2025 to August 2026).
+
+---
+
+## Copyright
+
+Copyright (c) 2026 Team Moleculens. All rights reserved.
+
+No part of this project may be copied, modified, distributed or used without prior written permission from the authors.
