@@ -49,21 +49,6 @@ Column types: 4 integer, 6 decimal, 8 text, 2 date-time, 2 boolean. Missing valu
 
 ---
 
-## Data pipeline
-
-```mermaid
-flowchart LR
-    A["Load<br/>1,048,575 rows"] --> B["Repair<br/>424,638 dates"]
-    B --> C["Clean<br/>0 rows deleted"]
-    C --> D["Engineer<br/>time, season, category"]
-    D --> E["Analyse<br/>statistics + models"]
-    E --> F["Export<br/>JSON + data cube"]
-    F --> G["Validate<br/>44 checks"]
-    G --> H["Dashboard<br/>React"]
-```
-
----
-
 ## Tech stack
 
 **Analysis:** Python, pandas, NumPy, SciPy, scikit-learn, PyArrow, Pydantic
