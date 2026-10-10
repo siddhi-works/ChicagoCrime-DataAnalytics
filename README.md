@@ -67,7 +67,9 @@ flowchart LR
 ## Tech stack
 
 **Analysis:** Python, pandas, NumPy, SciPy, scikit-learn, PyArrow, Pydantic
+
 **Dashboard:** React, TypeScript, Vite, Motion, d3, SVG and Canvas
+
 **Hosting:** Vercel
 
 ---
