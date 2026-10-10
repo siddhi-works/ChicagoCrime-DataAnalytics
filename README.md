@@ -1,7 +1,7 @@
 # Chicago Crime Analytics Dashboard
 
-**TECHVERSE 2026 Grand Prize Winner | Ajeenkya DY Patil**
-Made by **Team Moleculens**
+> ### 🏆 TECHVERSE 2026 · Grand Prize Winner
+> **Ajeenkya DY Patil** · built by **Team Moleculens**
 
 Live demo: **https://chicagocrime-data-analytics.vercel.app/**
 
