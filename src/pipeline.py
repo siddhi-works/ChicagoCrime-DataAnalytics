@@ -9,7 +9,7 @@ import stats_geo as sg
 import stats_time as st
 from charts import build_handout_charts
 from clean import clean
-from config import DAY_ORDER, TOD_ORDER, SEASON_ORDER
+from config import DAY_ORDER, TOD_ORDER
 from features import add_features
 from kpis import compute_kpis
 from load import load_raw
@@ -212,7 +212,7 @@ def run(load_force=False, bootstrap_reps=15):
     ch["x_arrest_odds_ratios"] = spec("x_arrest_odds_ratios", "Adjusted odds of arrest (logistic regression, window A)", "bar",
                                       ax("term", "Factor level", "nominal"), ax("odds_ratio", "Odds ratio"), ors.sort_values("odds_ratio"), "window_A",
                                       note="Reference = most common level of each factor; CIs are bootstrap percentiles.",
-                                      caveats=[f"CIs from {bootstrap_ratio_reps(mm)} bootstrap reps: indicative. Odds ratios for near-100%-arrest types are unstable."])
+                                      caveats=[f"CIs from {mm["bootstrap_reps"]} bootstrap reps: indicative. Odds ratios for near-100%-arrest types are unstable."])
     ch["x_arrest_importance"] = spec("x_arrest_importance", "What predicts arrest? Permutation importance (AUC drop, temporal hold-out)", "bar",
                                      ax("feature", "Feature", "nominal"), ax("auc_drop", "AUC drop when shuffled"), imp, "window_A",
                                      note=f"Gradient boosting AUC {mm['auc_gradient_boosting']:.3f}; logistic {mm['auc_logistic']:.3f}; trained <{mm['test_from']}, tested after.")
@@ -255,6 +255,3 @@ def run(load_force=False, bootstrap_reps=15):
     R["frames"] = {"df": df, "A": A, "B": B}
     return R
 
-
-def bootstrap_ratio_reps(mm):
-    return mm["bootstrap_reps"]

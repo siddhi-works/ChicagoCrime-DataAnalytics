@@ -6,7 +6,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from config import EXPORT, CLEAN, DAY_ORDER, TOD_ORDER, SEASON_ORDER, SOURCE_XLSX
+from config import EXPORT, CLEAN, DAY_ORDER, TOD_ORDER, SEASON_ORDER
 from schema_models import ChartSpec, KPI, Insight, Manifest, Cube
 
 # Values printed in the competition handout (Section 6 worked example). Used purely as external check values.

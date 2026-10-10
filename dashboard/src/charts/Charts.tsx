@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { scaleLinear } from "d3-scale";
 import { line as d3line, area as d3area, curveMonotoneX } from "d3-shape";
@@ -310,4 +310,3 @@ export function DivBars({ items, unit = "%" }: { items: { label: string; value: 
   );
 }
 
-export const Legend = ({ children }: { children: ReactNode }) => <div className="legend">{children}</div>;

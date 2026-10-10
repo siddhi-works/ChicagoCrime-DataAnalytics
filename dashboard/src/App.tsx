@@ -71,8 +71,6 @@ export default function App() {
   const pickDistrict = (code: string) => { const i = L.district.indexOf(Number(code)), s = new Set(f.districts); s.has(i) ? s.delete(i) : s.add(i); setF({ ...f, districts: s }); };
   const selTypes = new Set([...f.types].map((i) => L.primary_type[i]));
   const selDist = new Set([...f.districts].map((i) => String(L.district[i])));
-  const w = b.methodology.windows;
-  const last = (d: string) => new Date(new Date(d).getTime() - 864e5).toISOString().slice(0, 10);
   const heatX = (() => {
     const rows = b.charts.x_hour_dow_heatmap.data;
     return DAYS.map((d) => Array.from({ length: 24 }, (_, h) => rows.find((x) => x.day_of_week === d && x.hour === h)?.per_day ?? 0));
@@ -244,7 +242,7 @@ export default function App() {
             </AnimatePresence>
           </main>
           <Chat ctx={{ b, f, r, base, tab, story, district }} goTab={(t) => setTab(t)} />
-          <footer className="wrap mini-foot">Team Moleculens · Chicago Crime Branch · every figure computed in Python from the supplied workbook (never modified)</footer>
+          <footer className="wrap mini-foot">Team Moleculens · Chicago Crime Branch · every figure computed in Python from the supplied workbook (never modified) · TECHVERSE 2026 Grand Prize Winner, Ajeenkya DY Patil</footer>
         </motion.div>
       )}
     </div>

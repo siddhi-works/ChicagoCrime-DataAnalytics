@@ -17,3 +17,5 @@ reports/*.txt
 reports/_*.html
 *.log
 .env
+export/schemas/
+run_check.txt

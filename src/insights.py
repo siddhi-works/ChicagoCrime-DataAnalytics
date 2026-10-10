@@ -92,7 +92,6 @@ def build_insights(R):
     wk = hd[hd["day_of_week"].isin(["Saturday", "Sunday"])]
     mid = hd[~hd["day_of_week"].isin(["Saturday", "Sunday"])]
     night_hours = [0, 1, 2, 3, 4, 5]
-    ratio = wk[wk.hour.isin(night_hours)]["per_day"].sum() / mid[mid.hour.isin(night_hours)]["per_day"].sum() * (5 / 2)
     ratio = wk[wk.hour.isin(night_hours)]["per_day"].sum() / 2 / (mid[mid.hour.isin(night_hours)]["per_day"].sum() / 5)
     hp = R["hourly"]
     peak = hp.sort_values("crimes_excl_placeholder", ascending=False).iloc[0]

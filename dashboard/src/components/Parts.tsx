@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import type { Filters, Cube } from "../lib/engine";
 import type { InsightJson, KPIJson } from "../lib/data";
 import { C, Counter, fmt } from "../lib/ui";
@@ -25,24 +25,6 @@ export function Card({ q, title, sub, span = 6, table, caveats, children, extra,
       {extra}
       {caveats && caveats.length > 0 && <div className="caveat">{caveats.join(" · ")}</div>}
     </motion.section>
-  );
-}
-
-/* ───────── Chapter with scroll-linked headline ───────── */
-export function Chapter({ n, title, lead, children, id }: { n: string; title: string; lead: string; children: ReactNode; id: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 35%"] });
-  const x = useTransform(scrollYProgress, [0, 1], [-60, 0]);
-  const o = useTransform(scrollYProgress, [0, 0.7], [0.15, 1]);
-  return (
-    <div className="chapter wrap" id={id}>
-      <div className="chapter-head" ref={ref}>
-        <motion.div className="chapter-num" style={{ x, opacity: o }} aria-hidden>{n}</motion.div>
-        <motion.h2 style={{ opacity: o }}>{title}</motion.h2>
-        <p className="chapter-lead">{lead}</p>
-      </div>
-      <div className="grid">{children}</div>
-    </div>
   );
 }
 

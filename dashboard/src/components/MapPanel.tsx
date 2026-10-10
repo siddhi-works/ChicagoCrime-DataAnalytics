@@ -24,7 +24,6 @@ function frame(cells: GridCell[], w: number, h: number) {
   const ox = (w - (x1 - x0) * s) / 2, oy = (h - (y1 - y0) * s) / 2;
   return { px: (lon: number) => ox + (lon * k - x0) * s, py: (lat: number) => h - oy - (lat - y0) * s, cw: 0.005 * k * s, ch: 0.005 * s };
 }
-const hexRgb = (hex: string) => { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 
 export function MapPanel({ b, f, selected, setSelected, onFilter }: { b: Bundle; f: Filters; selected: number | null; setSelected: (d: number | null) => void; onFilter: (code: number) => void }) {
   const [metric, setMetric] = useState<Metric>("crimes");
