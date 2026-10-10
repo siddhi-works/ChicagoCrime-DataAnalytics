@@ -6,7 +6,11 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const src = resolve(here, "../../export");
 const dst = resolve(here, "../public/data");
-if (!existsSync(src)) throw new Error(`Run python run_all.py first: ${src} not found`);
+if (!existsSync(src)) {
+  // Deployed copy (e.g. Vercel): ../export does not exist, but public/data is already committed.
+  if (existsSync(dst)) { console.log("export/ not found; using committed public/data"); process.exit(0); }
+  throw new Error(`Run python run_all.py first: ${src} not found`);
+}
 rmSync(dst, { recursive: true, force: true });
 mkdirSync(dst, { recursive: true });
 cpSync(src, dst, {
