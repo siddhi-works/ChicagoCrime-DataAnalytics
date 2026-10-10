@@ -5,7 +5,7 @@
 
 An interactive dashboard that turns **1,048,575 Chicago police crime reports** into clear, filterable answers.
 
-**Live demo:** https://chicagocrime-data-analytics.vercel.app/
+**Live demo:** https://chicago-crime-data-analytics.vercel.app/
 
 ---
 
