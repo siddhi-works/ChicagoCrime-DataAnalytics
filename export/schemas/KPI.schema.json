@@ -1,0 +1,105 @@
+{
+ "properties": {
+  "id": {
+   "title": "Id",
+   "type": "string"
+  },
+  "label": {
+   "title": "Label",
+   "type": "string"
+  },
+  "value": {
+   "title": "Value",
+   "type": "number"
+  },
+  "unit": {
+   "title": "Unit",
+   "type": "string"
+  },
+  "formula": {
+   "title": "Formula",
+   "type": "string"
+  },
+  "numerator": {
+   "anyOf": [
+    {
+     "type": "number"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Numerator"
+  },
+  "denominator": {
+   "anyOf": [
+    {
+     "type": "number"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Denominator"
+  },
+  "harmonised_value": {
+   "anyOf": [
+    {
+     "type": "number"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Harmonised Value"
+  },
+  "sensitivity_value": {
+   "anyOf": [
+    {
+     "type": "number"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Sensitivity Value"
+  },
+  "sensitivity_note": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Sensitivity Note"
+  },
+  "note": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Note"
+  }
+ },
+ "required": [
+  "id",
+  "label",
+  "value",
+  "unit",
+  "formula"
+ ],
+ "title": "KPI",
+ "type": "object"
+}

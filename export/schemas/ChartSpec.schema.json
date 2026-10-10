@@ -1,0 +1,229 @@
+{
+ "$defs": {
+  "Axis": {
+   "properties": {
+    "field": {
+     "title": "Field",
+     "type": "string"
+    },
+    "label": {
+     "title": "Label",
+     "type": "string"
+    },
+    "type": {
+     "enum": [
+      "quantitative",
+      "ordinal",
+      "nominal",
+      "temporal"
+     ],
+     "title": "Type",
+     "type": "string"
+    }
+   },
+   "required": [
+    "field",
+    "label",
+    "type"
+   ],
+   "title": "Axis",
+   "type": "object"
+  },
+  "SeriesSpec": {
+   "properties": {
+    "field": {
+     "title": "Field",
+     "type": "string"
+    },
+    "mark": {
+     "enum": [
+      "bar",
+      "line",
+      "area",
+      "point"
+     ],
+     "title": "Mark",
+     "type": "string"
+    },
+    "axis": {
+     "enum": [
+      "left",
+      "right"
+     ],
+     "title": "Axis",
+     "type": "string"
+    }
+   },
+   "required": [
+    "field",
+    "mark",
+    "axis"
+   ],
+   "title": "SeriesSpec",
+   "type": "object"
+  }
+ },
+ "properties": {
+  "id": {
+   "title": "Id",
+   "type": "string"
+  },
+  "handout_ref": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "description": "K/Q number from the competition handout, if any",
+   "title": "Handout Ref"
+  },
+  "title": {
+   "title": "Title",
+   "type": "string"
+  },
+  "subtitle": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Subtitle"
+  },
+  "chart_type": {
+   "enum": [
+    "line",
+    "column",
+    "bar",
+    "donut",
+    "combo",
+    "heatmap",
+    "scatter",
+    "table",
+    "area",
+    "map"
+   ],
+   "title": "Chart Type",
+   "type": "string"
+  },
+  "x": {
+   "$ref": "#/$defs/Axis"
+  },
+  "y": {
+   "$ref": "#/$defs/Axis"
+  },
+  "series": {
+   "anyOf": [
+    {
+     "items": {
+      "$ref": "#/$defs/SeriesSpec"
+     },
+     "type": "array"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Series"
+  },
+  "order": {
+   "anyOf": [
+    {},
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "description": "Category order for ordinal axes (list) or {rows, columns} for heatmaps",
+   "title": "Order"
+  },
+  "row_field": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Row Field"
+  },
+  "note": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Note"
+  },
+  "window": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "description": "Time window the data is restricted to, if any",
+   "title": "Window"
+  },
+  "scope": {
+   "default": "whole_dataset",
+   "enum": [
+    "whole_dataset",
+    "window_A",
+    "window_B",
+    "both_windows"
+   ],
+   "title": "Scope",
+   "type": "string"
+  },
+  "filterable_via_cube": {
+   "default": false,
+   "description": "True if the chart can be recomputed from cube.json under filters",
+   "title": "Filterable Via Cube",
+   "type": "boolean"
+  },
+  "caveats": {
+   "default": [],
+   "items": {
+    "type": "string"
+   },
+   "title": "Caveats",
+   "type": "array"
+  },
+  "data": {
+   "items": {
+    "additionalProperties": true,
+    "type": "object"
+   },
+   "title": "Data",
+   "type": "array"
+  }
+ },
+ "required": [
+  "id",
+  "title",
+  "chart_type",
+  "x",
+  "y",
+  "data"
+ ],
+ "title": "ChartSpec",
+ "type": "object"
+}

@@ -1,0 +1,10 @@
+pandas>=2.0
+numpy
+pyarrow
+openpyxl
+scipy
+scikit-learn
+matplotlib
+seaborn
+pydantic>=2
+pytest

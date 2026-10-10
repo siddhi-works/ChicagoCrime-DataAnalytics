@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Chicago Crime Branch – Report</title>
+<style>
+@page { size: A4; margin: 16mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; color: #1b1f2a; font-size: 10.6pt; line-height: 1.5; margin: 0; }
+.cover { background: #0a0c12; color: #fff; padding: 34px 32px; border-radius: 14px; margin-bottom: 18px; position: relative; overflow: hidden; }
+.cover::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: repeating-linear-gradient(-45deg, #f5c518 0 12px, #0a0c12 12px 24px); }
+.cover h1 { font-size: 27pt; margin: 4px 0 6px; letter-spacing: -.5px; line-height: 1.1; }
+.cover .tag { font-size: 9pt; letter-spacing: .18em; text-transform: uppercase; color: #f5c518; }
+.cover p { margin: 6px 0 0; color: #c9ceda; }
+h2 { font-size: 15pt; margin: 22px 0 8px; padding-bottom: 5px; border-bottom: 3px solid #f5c518; page-break-after: avoid; }
+h3 { font-size: 11.5pt; margin: 14px 0 4px; color: #1d4fa6; page-break-after: avoid; }
+p { margin: 4px 0 6px; } ul, ol { margin: 4px 0 8px; padding-left: 20px; } li { margin: 2px 0; }
+.q { background: #f4f6fb; border-left: 4px solid #3987e5; padding: 7px 11px; margin: 9px 0 3px; font-weight: 600; border-radius: 0 8px 8px 0; page-break-after: avoid; }
+.a { margin: 0 0 6px 15px; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9.6pt; page-break-inside: auto; }
+th, td { border: 1px solid #d6dbe6; padding: 5px 8px; text-align: left; vertical-align: top; }
+th { background: #0a0c12; color: #fff; font-weight: 600; } tr:nth-child(even) td { background: #f7f8fc; }
+tr { page-break-inside: avoid; }
+.box { border: 1.5px dashed #c98500; background: #fffaf0; padding: 9px 13px; border-radius: 10px; margin: 10px 0; }
+.pipe { font-family: Consolas, monospace; background: #0a0c12; color: #e8ecf5; padding: 12px 16px; border-radius: 10px; font-size: 9.5pt; white-space: pre; line-height: 1.45; }
+.pill { display: inline-block; background: #f5c518; color: #0a0c12; font-weight: 700; padding: 1px 8px; border-radius: 6px; font-size: 9pt; }
+.foot { margin-top: 20px; color: #6b7285; font-size: 9pt; text-align: center; border-top: 1px solid #d6dbe6; padding-top: 8px; }
+.tech { background: #eef2f9; border: 1px solid #d3dcee; border-radius: 8px; padding: 6px 10px; margin: 5px 0 4px; font-size: 9.2pt; color: #2a3350; page-break-inside: avoid; }
+code { font-family: Consolas, monospace; font-size: 8.9pt; background: #e8ecf5; padding: 0 3px; border-radius: 3px; color: #1d3a7a; }
+.pipe code { background: none; color: inherit; padding: 0; }
+</style></head><body>
+
+<div class="cover">
+  <div class="tag">Case file · TECHVERSE · Team Moleculens</div>
+  <h1>Chicago Crime Branch</h1>
+  <p>Simple report, tech stack, pipeline and judge Q&amp;A</p>
+  <p style="font-size:9.5pt">1,048,575 crime reports · Python analysis · React dashboard · Detective Dot assistant</p>
+</div>
+
+<h2>1. The project in 5 lines</h2>
+<ul>
+<li>We took <b>1,048,575 Chicago police crime reports</b>.</li>
+<li>We cleaned them with <b>Python</b>.</li>
+<li>We found patterns in time, crime type, arrests and place.</li>
+<li>We checked every number automatically.</li>
+<li>We showed it all in a <b>website</b> with a map, filters and a helper called <b>Dot</b>.</li>
+</ul>
+<div class="box"><b>Golden rule:</b> the website never invents numbers. Python calculates everything; the website only draws it.</div>
+
+<h2>2. Tech stack</h2>
+<table>
+<tr><th>Part</th><th>Tool</th><th>What it is for</th></tr>
+<tr><td>Analysis</td><td>Python 3.13</td><td>The TECHVERSE rulebook requires Python for analysis</td></tr>
+<tr><td>Data handling</td><td>pandas, NumPy, PyArrow</td><td>Load, clean and group 1 million rows</td></tr>
+<tr><td>Statistics</td><td>SciPy</td><td>Confidence ranges, tests, corrections</td></tr>
+<tr><td>Machine learning</td><td>scikit-learn</td><td>Arrest model, timing groups, daily-count model</td></tr>
+<tr><td>Data contracts</td><td>Pydantic</td><td>Checks every exported file has the right shape</td></tr>
+<tr><td>QA pictures</td><td>matplotlib</td><td>Contact sheet proving every chart renders</td></tr>
+<tr><td>Website</td><td>React + TypeScript + Vite</td><td>The interactive dashboard</td></tr>
+<tr><td>Animation</td><td>Motion</td><td>Counters, tab slides, bars growing, welcome letters</td></tr>
+<tr><td>Chart maths</td><td>d3-scale / shape / array / interpolate</td><td>Scales, curves, colours (charts themselves are hand-built SVG &amp; Canvas)</td></tr>
+<tr><td>Fonts</td><td>Bricolage Grotesque, Inter, JetBrains Mono</td><td>Installed locally, so no internet needed</td></tr>
+<tr><td>Testing</td><td>Node scripts + esbuild</td><td>Check the website's maths against Python</td></tr>
+</table>
+
+<h2>3. Pipeline: start to finish</h2>
+<div class="pipe">Crime Dataset.xlsx  (never touched)
+   |
+1 LOAD      read-only, saved as fast parquet
+2 REPAIR    fix swapped dates
+3 CLEAN     fix bad map points and empty values
+4 FEATURES  Time of Day, Season, Violent/Property/Other...
+5 ANALYSE   reliable periods, statistics, models, map data
+6 EXPORT    JSON files + a compact "cube"
+7 VALIDATE  44 automatic checks
+   |
+export/ folder  -->  8 DASHBOARD draws it</div>
+<ol>
+<li><b>Load.</b> The 150 MB Excel file is read in read-only mode. A SHA-256 fingerprint proves we never changed it.</li>
+<li><b>Repair dates.</b> Excel swapped month and day on 424,638 dates. We swapped them back. Proof: "date after update" errors fell from 3.3% to 0%, and the monthly chart matched the handout exactly.</li>
+<li><b>Clean.</b> 16 impossible map points blanked, community area "0" made missing, empty places set to UNKNOWN. <b>No rows were deleted.</b></li>
+<li><b>Features.</b> Added Time of Day, Season, Violent/Property/Other (handout definitions), hour, weekday, and flags for suspicious timestamps.</li>
+<li><b>Analyse.</b> Found the reliable periods, then ran statistics and models.</li>
+<li><b>Export.</b> KPIs, one file per chart, insights, map data, and the cube. TypeScript types are generated automatically.</li>
+<li><b>Validate.</b> 44 checks: handout numbers reproduced, totals add up, sort orders correct, cube matches raw rows, original file unchanged.</li>
+<li><b>Dashboard.</b> Draws the export, and re-checks its own maths against Python on startup ("Verified" badge).</li>
+</ol>
+
+<h3>Key finding about the data</h3>
+<p>The file has exactly 1,048,575 rows (Excel's limit), so it is a <b>slice</b>. Only two periods are dense: <b>April 2015 – July 2017</b> (window A) and <b>October 2025 – August 2026</b> (window B). Elsewhere there are only 300–900 records a month, so we make <b>no long-term trend claims</b>. Handout KPIs still use the whole dataset, as required.</p>
+
+<h2>4. How the website works</h2>
+<ul>
+<li><b>The cube:</b> all rows pre-added into about 524,000 combinations (type, district, month, weekday, time of day, arrest, domestic), 0.66 MB compressed. Filters just add up the right rows, so KPIs, charts and map always agree.</li>
+<li><b>Four tabs, not one long scroll:</b> Dashboard (8 KPIs + 10 required charts), Story, Map, Data trust.</li>
+<li><b>Map:</b> each ~550 m cell takes its most common police district. No boundaries are invented. Colour by crimes, arrest rate, violent, domestic or night share.</li>
+<li><b>Colour has meaning:</b> violent red · property violet · other green · arrests amber · domestic magenta · volume blue.</li>
+<li><b>Q9</b> has a second axis because the handout requires it.</li>
+<li><b>Detective Dot</b> is rule-based, not a free-form AI. It answers only from our exported analysis and live calculations, follows your filters, can compare crimes or districts, tell fun facts and explain charts.</li>
+<li><b>Look:</b> true-crime noir: night-city welcome with flashlight, crime-scene tape, hazard stripe, EXHIBIT/CLUE tags.</li>
+</ul>
+
+<h2>5. Rulebook presentation checklist</h2>
+<h3>1) Problem / theme understanding</h3><p>When, what, where and how do crimes happen, and who gets arrested? Plus the handout's 8 KPI cards and 10 charts.</p>
+<h3>2) Dataset and source</h3><p>Given by the organisers: an Excel file, 1,048,575 rows, 22 columns. It <i>appears to be</i> the City of Chicago "Crimes – 2001 to Present" data. Say "appears to be", not "is", because we could not confirm it.</p>
+<h3>3) Cleaning and preparation</h3><p>Swapped dates repaired, bad map points blanked, zeros and empties handled, nothing deleted, new columns added.</p>
+<h3>4) Analytical approach</h3><p>Find reliable periods, compare groups fairly, test on unseen months, report how big each difference is.</p>
+<h3>5) Key visualisations</h3><p>The 10 required charts, extra charts, the district map and Dot.</p>
+<h3>6) Major findings</h3>
+<ul>
+<li>Summer has about <b>17% more</b> crime per day than winter.</li>
+<li>Weekend nights run about <b>69% above</b> weekday nights.</li>
+<li>The evening arrest rate looks higher, but <b>86% of that gap is explained by crime type</b>.</li>
+<li>District 11's high arrest rate (38.3%) is explained by its heavy narcotics mix (index 0.98).</li>
+<li><i>What</i> the crime is predicts arrest far better than <i>when</i> or <i>where</i> (AUC 0.86 on unseen months).</li>
+</ul>
+<h3>7) Conclusion</h3><p>Crime follows a rhythm of season, weekend and night. Arrest rates depend mostly on the type of crime. Because of data limits, we do not claim long-term trends.</p>
+<h3>8) Limitations and assumptions</h3>
+<ul><li>The file is a slice, not the full data.</li><li>No population numbers, so no "per person" claims.</li><li>2025–26 has almost no map coordinates.</li><li>Models show links, not causes.</li></ul>
+
+<h2>6. Questions judges may ask (rulebook 5.3), with simple answers and "under the hood"</h2>
+<p>Each answer has the <b>simple version</b> first. The grey box underneath is the <b>technical version</b>: which tool, which code file and function, what it does, and which method.</p>
+
+<h3>A. Dataset selection</h3>
+<div class="q">Why this dataset?</div>
+<div class="a">It was given by the organisers and matches the theme and handout. Totals match: 1,048,575 crimes and 214,846 arrests.
+<div class="tech"><b>Tech:</b> Excel (.xlsx), 1 sheet, 22 columns. <b>Code:</b> <code>load.py → load_raw()</code> reads it with <code>openpyxl</code> in read-only mode into a pandas table and caches it as parquet (fast reload). <b>Check:</b> <code>validate.py</code> asserts K1 = 1,048,575 and arrests = 214,846 (handout values).</div></div>
+
+<div class="q">Is the data complete?</div>
+<div class="a">No. It has exactly Excel's row limit, so it is a slice. Only two periods are fully filled.
+<div class="tech"><b>Method:</b> count records per day; a "dense window" is a run of at least 60 days with at least 200 records a day. <b>Code:</b> <code>windows.py → dense_windows()</code> finds them; <code>pipeline.py → run()</code> trims them to whole months (A = Apr 2015–Jul 2017, B = Oct 2025–Aug 2026). <b>Shown in:</b> the coverage heat map on Data trust → Source (<code>stats_time.py → coverage()</code>).</div></div>
+
+<div class="q">Did you change the original file?</div>
+<div class="a">No. We only read it. A checksum (digital fingerprint) proves it did not change.
+<div class="tech"><b>Code:</b> <code>load.py → fingerprint()</code> stores SHA-256 + size + modified-time on first read; <code>validate.py</code> recomputes and compares at the end. <b>Why it matters:</b> proves the "no modified data" rule.</div></div>
+
+<h3>B. Data-cleaning decisions</h3>
+<div class="q">Why did you change the dates?</div>
+<div class="a">Excel read some dates the wrong way round. After fixing, the monthly chart matched the handout exactly and "date after update" errors fell from 3.3% to 0%.
+<div class="tech"><b>Evidence:</b> 623,937 cells were text like <code>MM/DD/YYYY hh:mm AM</code> (day always ≥ 13) while 424,638 were real Excel datetimes (day always ≤ 12, with a flat "month" distribution). Excel parsed ambiguous dates day-first. <b>Code:</b> <code>clean.py → _parse_stamp()</code> parses text with <code>pd.to_datetime(format=...)</code> and, for datetime cells, rebuilds the date with month and day swapped. <b>Proof tests:</b> year still equals the Year column (100%); Date ≤ Updated On improves; Q1 reproduces 28 months with Feb 2016 = 18,710.</div></div>
+
+<div class="q">Why did you not delete bad rows?</div>
+<div class="a">Deleting would change totals the handout expects (K1 must be 1,048,575). We fixed or flagged values instead.
+<div class="tech"><b>Code:</b> <code>clean.py → clean()</code> only blanks (sets to missing) impossible coordinates (outside a Chicago bounding box), turns community area 0 into missing, fills empty places with "UNKNOWN", and logs each count into <code>cleaning_log.json</code>. Duplicate IDs = 0, full duplicate rows = 0; 13 repeated case numbers are kept (different IDs).</div></div>
+
+<div class="q">What are placeholder times?</div>
+<div class="a">About 5.5% of records are stamped exactly 00:00 or 12:00, often a "time unknown" default. We keep them for handout numbers but also show a version without them: night-time crime is <b>17.7%</b> by the handout definition and <b>15.8%</b> without them.
+<div class="tech"><b>Code:</b> <code>features.py → add_features()</code> sets <code>default_time = (minute == 0) &amp; hour in (0, 12)</code>. <code>kpis.py → compute_kpis()</code> reports K7 literal plus <code>sensitivity_value</code>. Hour-level charts exclude these records.</div></div>
+
+<div class="q">Why are so many crimes dated the 1st of a month?</div>
+<div class="a">Some types (sex offence, offences involving children, deceptive practice) are heavily over-represented on day 1. It probably means the true date was unknown. We flag it but cannot prove it.
+<div class="tech"><b>Method:</b> compare each type's share on day 1 with the expected 1 ÷ 30.4 (≈3.3%). Sex offence has 14.4%, a 4.4× lift. <b>Code:</b> <code>stats_time.py → first_of_month_artifact()</code>. This also explains most of the largest daily "spikes" found by <code>anomaly_table()</code>.</div></div>
+
+<h3>C. Code</h3>
+<div class="q">How is your code organised?</div>
+<div class="a">Small files, one job each. One command runs everything.
+<div class="tech"><b>Python:</b> <code>load → clean → features → kpis / charts → stats_time / stats_arrest / stats_geo → insights → export → validate</code>, orchestrated by <code>pipeline.py → run()</code> and started by <code>run_all.py</code>. Shared maths helpers live in <code>statlib.py</code>. <b>Website:</b> <code>engine.ts</code> (maths), <code>data.ts</code> (loading), <code>charts/</code> (drawing), <code>components/</code> (screens), <code>assistant.ts</code> + <code>dot.ts</code> (Dot).</div></div>
+
+<div class="q">How do you know your code is right?</div>
+<div class="a">44 automatic checks, including: totals add up, sort orders are correct, handout values are reproduced, and the website's maths matches Python's.
+<div class="tech"><b>Code:</b> <code>validate.py → run_checks()</code> (handout anchors, sums, orders, cube-vs-raw on 25 random filters, source fingerprint); <code>dashboard/scripts/verify.mjs</code> bundles <code>engine.ts</code> with esbuild and compares all KPIs and Q1–Q10 against the Python export; the page repeats a 15-point self-check on load (the "Verified" badge). <b>Schemas:</b> <code>schema_models.py</code> (Pydantic) validates every exported file and generates the TypeScript types via <code>tsgen.py</code>.</div></div>
+
+<div class="q">Did you hard-code any findings?</div>
+<div class="a">No. Every number is computed from the data, and even the sentences are filled in from computed results.
+<div class="tech"><b>Code:</b> <code>insights.py → build_insights()</code> builds each sentence with f-strings from the results dictionary (e.g. the 17% summer swing comes from <code>bootstrap_ratio()</code>). The dashboard reads <code>insights.json</code>, and Dot recalculates live on the cube.</div></div>
+
+<h3>D. Analytical methods</h3>
+<div class="q">What is "standardising"?</div>
+<div class="a">Comparing arrest rates fairly. Evenings have more drug crimes, which almost always end in arrest. Standardising pretends every time of day has the same crime mix, so we can see whether time itself matters. It barely does.
+<div class="tech"><b>Method:</b> <i>direct standardisation</i>: for each time of day, take the arrest rate within each crime type and re-weight by the overall crime-type mix. Result: raw Night 18.1% → Evening 25.4% (gap 7.3 pts) becomes 21.4% → 22.4% (gap 1.0 pt), so 86% of the gap was crime mix (narcotics are 2.3% of night crimes but 8.1% of evening crimes). <b>Code:</b> <code>stats_arrest.py → tod_standardised()</code>. This is "Simpson's paradox".</div></div>
+
+<div class="q">What is the district "index"?</div>
+<div class="a">Real arrests ÷ arrests we would expect from that district's crime types. 1.00 means "as expected". District 11 scores 0.98.
+<div class="tech"><b>Method:</b> <i>indirect standardisation (SIR)</i>: expected arrests = sum over each crime of the city-wide arrest rate for its type. 95% range from the exact Poisson (Garwood) interval; p-values corrected for 22 districts with <b>Benjamini–Hochberg FDR</b>; a district is flagged only if corrected p &lt; 0.05 and the range excludes 1. <b>Code:</b> <code>stats_arrest.py → district_sir()</code>, helpers <code>poisson_ci()</code> and <code>bh_fdr()</code> in <code>statlib.py</code>. <b>Caveat:</b> a screening tool; it ignores spatial correlation.</div></div>
+
+<div class="q">Why give ranges (confidence intervals) and effect sizes?</div>
+<div class="a">With about a million rows, almost any difference looks "significant". We show <b>how big</b> a difference is and <b>how sure</b> we are.
+<div class="tech"><b>Methods used:</b> Wilson interval (rates), exact Poisson interval (counts), bootstrap ratio with 2,000 resamples (summer ÷ winter = 1.17, 95% range 1.14–1.19), Cohen's w (weekday effect = 0.020, a very small effect), Cramér's V (missing coordinates), Kruskal–Wallis (seasons). <b>Code:</b> <code>statlib.py</code> (<code>wilson, poisson_ci, bootstrap_ratio, cramers_v</code>) and <code>stats_time.py</code>.</div></div>
+
+<div class="q">How did you test the arrest model?</div>
+<div class="a">Trained on early months, tested on later months it had never seen. Score <b>AUC 0.86</b> (0.5 = guessing, 1.0 = perfect).
+<div class="tech"><b>Method:</b> temporal hold-out: train before 2017-01-01 (474,279 rows), test after (153,508). Models: logistic regression (odds ratios with 15 bootstrap repeats) and <code>HistGradientBoostingClassifier</code> (AUC 0.865; logistic 0.836). <b>Importance:</b> permutation importance: shuffling crime type costs 0.31 AUC, location 0.10, time of day + weekday only about 0.005. <b>Code:</b> <code>stats_arrest.py → arrest_models()</code>. Also reports Brier score and a calibration table.</div></div>
+
+<div class="q">Why only two time windows?</div>
+<div class="a">Outside them the file has only 300–900 records a month, so trends would be unreliable.
+<div class="tech">See the dense-window method above (<code>dense_windows()</code>). The "then vs now" comparison uses only calendar months present in both windows (<code>stats_time.py → era_comparison()</code>) so seasons don't bias it.</div></div>
+
+<div class="q">Why is there no per-person crime rate?</div>
+<div class="a">The data has no population numbers. We could add them from another cited source later.
+<div class="tech">Rulebook section 4 allows extra sources only if clearly cited. We kept to the supplied file to avoid mixing sources; this is listed as a limitation and a "what would change the conclusions" item.</div></div>
+
+<h3>E. Visualisations: why this chart?</h3>
+<table>
+<tr><th>Chart</th><th>Type and why</th><th>What it tells</th><th>How it is built (tech)</th></tr>
+<tr><td>Q1 monthly</td><td><b>Line</b>: time is ordered</td><td>Summer peak, February dip</td><td><code>LineChart</code> in <code>Charts.tsx</code>: d3 monotone curve, animated path, crosshair + tooltip, peak/low labels. Data: <code>engine.compute()</code> → <code>monthly[28]</code></td></tr>
+<tr><td>Q2 weekday</td><td><b>Columns</b>, Mon→Sun</td><td>Days are close</td><td><code>Columns</code>; order fixed by the DAYS array, not alphabetical</td></tr>
+<tr><td>Q3 time of day</td><td><b>Columns</b>, in order</td><td>Afternoon/evening busiest</td><td><code>Columns</code>; hour bins Night 0–5, Morning 6–11, Afternoon 12–17, Evening 18–23 (<code>features.py</code>)</td></tr>
+<tr><td>Q4 season 2016</td><td><b>Columns</b></td><td>Summer highest</td><td>Cube filtered to year 2016; season looked up from month</td></tr>
+<tr><td>Q5 category share</td><td><b>Donut</b></td><td>Property ~43%, violent ~29%</td><td><code>Donut</code>: SVG circles animated with <code>strokeDasharray</code></td></tr>
+<tr><td>Q6 arrest by time</td><td><b>Columns</b> (a rate)</td><td>Looks higher in the evening</td><td>arrests ÷ crimes per time-of-day bin</td></tr>
+<tr><td>Q7 top 10 types</td><td><b>Sorted bars</b></td><td>Theft, battery lead</td><td><code>HBars</code>; colour = crime category; click filters everything</td></tr>
+<tr><td>Q8 top 5 domestic</td><td><b>Sorted bars</b></td><td>Battery biggest</td><td>Same as Q7 using domestic counts</td></tr>
+<tr><td>Q9 districts</td><td><b>Bars + line</b>, two axes (handout asks)</td><td>Busy ≠ high-arrest</td><td><code>Combo</code>: left axis crimes, right axis arrest %, click to filter</td></tr>
+<tr><td>Q10 heat map</td><td><b>Heat map</b></td><td>Weekend nights, weekday afternoons</td><td><code>Heatmap</code>: d3 colour ramp, staggered fade-in, hover cell tooltip</td></tr>
+</table>
+<div class="tech"><b>Shared functionality:</b> every chart card has a Table view (accessibility), hover tooltips (<code>showTip()</code> in <code>ui.tsx</code>), keyboard focus, and animations from the <code>motion</code> library. Colours follow a validated palette (<code>dataviz</code> validator: colour-blind separation and contrast passed).</div>
+
+<h3>F. Interpretation</h3>
+<div class="q">Does a high arrest rate mean a district is dangerous?</div>
+<div class="a">No. It describes police outcomes, not danger, and depends heavily on which crimes are reported.
+<div class="tech">District 11: 38.3% arrested, but its crime mix is 24% narcotics, so the expected rate is 39.5% and the index is 0.98 (<code>district_sir()</code>). Location quotient for narcotics there is 3.7 (<code>stats_geo.py → location_quotients()</code>).</div></div>
+
+<div class="q">Does more night crime mean nights are riskier?</div>
+<div class="a">Not per hour. Night is only 6 of 24 hours. The exception is weekend nights.
+<div class="tech"><b>Method:</b> crimes per calendar day by weekday × hour, excluding placeholder times (<code>stats_time.py → hour_dow_matrix()</code>). Weekend 00:00–05:59 is 1.69× a weekday's.</div></div>
+
+<div class="q">Is crime falling?</div>
+<div class="a">Window B (2025–26) has about 14% fewer crimes a day than window A (2015–17), but they are two periods about 10 years apart, so we do not call it a trend. Recent arrest data may also be incomplete.
+<div class="tech"><b>Method:</b> seasonally matched months, bootstrap ratio 0.86 (95% range 0.85–0.87). <b>Code:</b> <code>era_comparison()</code>. Arrest rate 21.6% → 15.4% is likely understated because later arrests are not yet recorded.</div></div>
+
+<h3>G. Conclusions</h3>
+<div class="q">Your one-line conclusion?</div>
+<div class="a">Crime follows predictable rhythms (summer, weekends, nights), and arrests depend mostly on the type of crime, not time or place.</div>
+<div class="q">What next?</div>
+<div class="a">Add population data (cited), get the full dataset, and find which dates were estimated.</div>
+
+<h3>H. Questions about the website and Dot</h3>
+<div class="q">How do the filters change every chart so fast?</div>
+<div class="a">The website holds a compact "cube" of pre-added counts and just adds up the rows you selected.
+<div class="tech"><b>Python:</b> <code>pipeline.py → build_cube()</code> groups 1M rows into ~524k combinations of type, district, month, weekday, time of day, arrest, domestic (dictionary-coded integer arrays, 0.66 MB gzip). <b>Browser:</b> <code>data.ts → loadBundle()</code> downloads it; <code>engine.ts → parseCube()</code> un-gzips with <code>DecompressionStream</code>; <code>Engine.compute(filters)</code> makes one pass over typed arrays (Int32Array) and fills all KPI and chart numbers at once, so everything always agrees.</div></div>
+
+<div class="q">How does the map work?</div>
+<div class="a">Each ~550 m square of the city takes its most common police district, and is coloured by that district's score.
+<div class="tech"><b>Python:</b> <code>stats_geo.py → grid_density()</code> bins latitude/longitude into 0.005° cells and finds each cell's dominant district. <b>Browser:</b> <code>MapPanel.tsx</code> draws cells on an HTML canvas with <code>requestAnimationFrame</code>; <code>Engine.districtStats()</code> gives per-district totals that follow your filters; hover/click uses nearest-cell hit testing. Districts with fewer than 0.15% of crimes are left out of rate rankings (tiny-sample noise).</div></div>
+
+<div class="q">How does Dot answer questions? Is it AI?</div>
+<div class="a">Dot is a rule-based analyst, not a free-form AI. It answers only from our exported analysis and live calculations.
+<div class="tech"><b>Code:</b> <code>assistant.ts → answer()</code> normalises the question, then tries (1) <code>dot.ts → extra()</code>: greetings, fun facts, comparisons, chart help, rankings; (2) district / crime-type detection and live calculations on the cube; (3) keyword scoring over a knowledge base built from <code>insights.json</code>, <code>kpis.json</code>, <code>methodology.json</code> and <code>cleaning_log.json</code>; (4) an honest "I can't answer that" fallback. <code>dot.ts → pickChips()</code> rotates suggestions using a seeded shuffle; <code>flavour()</code> varies the wording. Because it never invents numbers, every answer is grounded.</div></div>
+
+<div class="q">How is the page animated without being slow?</div>
+<div class="a">Animations use cheap effects and the heavy maths is done once.
+<div class="tech"><b>Tech:</b> <code>motion</code> for spring/tween animation, CSS transforms for the skyline and tape (GPU-friendly), canvas for the map and welcome backdrop, and one SVG path per skyline layer (not thousands of shapes). Large blur filters were removed after profiling showed they slowed rendering.</div></div>
+
+<h2>7. Code walkthrough: file by file</h2>
+<h3>Python (analysis)</h3>
+<table>
+<tr><th>File</th><th>What it does (simple)</th><th>Key functions / method</th></tr>
+<tr><td><code>config.py</code></td><td>Paths and handout definitions in one place</td><td>Violent / Property lists, trend window, orders</td></tr>
+<tr><td><code>load.py</code></td><td>Reads the Excel file safely, caches it</td><td><code>load_raw()</code>, <code>fingerprint()</code></td></tr>
+<tr><td><code>clean.py</code></td><td>Repairs dates and cleans values, logs every change</td><td><code>_parse_stamp()</code>, <code>clean()</code></td></tr>
+<tr><td><code>features.py</code></td><td>Adds Time of Day, Season, category, hour, flags</td><td><code>add_features()</code> (pandas <code>pd.cut</code>, <code>isin</code>)</td></tr>
+<tr><td><code>windows.py</code></td><td>Finds the dense periods from daily counts</td><td><code>dense_windows()</code></td></tr>
+<tr><td><code>kpis.py</code></td><td>The 8 handout KPIs + sensitivity values</td><td><code>compute_kpis()</code></td></tr>
+<tr><td><code>charts.py</code></td><td>The 10 handout charts as tidy, sorted data</td><td><code>build_handout_charts()</code></td></tr>
+<tr><td><code>statlib.py</code></td><td>Small, checkable statistics helpers</td><td>Wilson, Poisson interval, BH-FDR, bootstrap, Cramér's V</td></tr>
+<tr><td><code>stats_time.py</code></td><td>Time analysis: weekday, hour, seasons, anomalies, then-vs-now, timing groups</td><td><code>day_of_week_index, seasonality, daily_glm, anomaly_table, era_comparison, type_hour_clusters, first_of_month_artifact</code></td></tr>
+<tr><td><code>stats_arrest.py</code></td><td>Arrest analysis and models</td><td><code>tod_standardised, district_sir, arrest_models, domestic_vs_nondomestic</code></td></tr>
+<tr><td><code>stats_geo.py</code></td><td>Map grid, district specialisation, concentration</td><td><code>grid_density, location_quotients, concentration</code></td></tr>
+<tr><td><code>insights.py</code></td><td>Turns results into sentences, with no hard-coded numbers</td><td><code>build_insights()</code></td></tr>
+<tr><td><code>pipeline.py</code></td><td>Runs all analyses, builds the cube</td><td><code>run()</code>, <code>build_cube()</code></td></tr>
+<tr><td><code>schema_models.py</code>, <code>tsgen.py</code></td><td>Defines and checks the shape of every export; makes TypeScript types</td><td>Pydantic models → JSON Schema → <code>types.ts</code></td></tr>
+<tr><td><code>export.py</code></td><td>Writes the JSON files, manifest (with checksums), data dictionary</td><td><code>write_all()</code></td></tr>
+<tr><td><code>validate.py</code></td><td>44 automatic checks</td><td><code>run_checks()</code></td></tr>
+<tr><td><code>reports.py</code>, <code>docs.py</code></td><td>QA contact sheet and generated documentation</td><td>matplotlib</td></tr>
+<tr><td><code>run_all.py</code></td><td>One command for everything</td><td>load → analyse → export → validate</td></tr>
+</table>
+
+<h3>Website (React + TypeScript)</h3>
+<table>
+<tr><th>File</th><th>What it does (simple)</th></tr>
+<tr><td><code>lib/engine.ts</code></td><td>The calculator: filters in, every KPI/chart number out (<code>compute</code>, <code>districtStats</code>, <code>typeStats</code>)</td></tr>
+<tr><td><code>lib/data.ts</code></td><td>Downloads the export files in parallel and builds the cube engine</td></tr>
+<tr><td><code>lib/ui.tsx</code></td><td>Number formatting, animated counter, tooltip, resize helper, palette</td></tr>
+<tr><td><code>charts/Charts.tsx</code></td><td>All charts drawn as SVG: line, columns, bars, donut, combo, heat map, scatter</td></tr>
+<tr><td><code>components/MapPanel.tsx</code></td><td>District map on canvas + ranked list + detail panel</td></tr>
+<tr><td><code>components/Parts.tsx</code></td><td>Chart card, KPI card (3D tilt), filter bar, multi-select, insight blocks</td></tr>
+<tr><td><code>components/TrustPanel.tsx</code></td><td>Data trust: source, pipeline, metrics, methods, quality, limits</td></tr>
+<tr><td><code>components/Welcome.tsx</code></td><td>Noir welcome: skyline, tape, flashlight, letters</td></tr>
+<tr><td><code>components/Chat.tsx</code></td><td>Dot's chat window</td></tr>
+<tr><td><code>lib/assistant.ts</code>, <code>lib/dot.ts</code></td><td>Dot's brain: question matching, live answers, fun facts, comparisons, rotating suggestions</td></tr>
+<tr><td><code>App.tsx</code></td><td>Puts it together: tabs, filters, the self-check badge</td></tr>
+<tr><td><code>scripts/sync-data.mjs</code>, <code>verify.mjs</code></td><td>Copies the export into the site; proves browser maths = Python maths</td></tr>
+</table>
+
+<h3>How data flows (one example: clicking "Theft")</h3>
+<ol>
+<li>You click the Theft bar in Q7 (<code>HBars</code> → <code>pickType()</code> in <code>App.tsx</code>).</li>
+<li>The filter state now contains Theft's index.</li>
+<li><code>Engine.compute()</code> loops the 524k cube rows once, keeping only Theft rows.</li>
+<li>All 8 KPI cards, 10 charts and the map recalculate and animate to the new values (Theft total = 236,314, matching the Q7 bar).</li>
+<li>Dot also answers using the same filters.</li>
+</ol>
+
+<h2>8. Methods in plain words</h2>
+<ol>
+<li><b>Find reliable periods:</b> count crimes per day; keep long stretches with plenty of data.</li>
+<li><b>Compare fairly:</b> standardise, give ranges, correct for testing many things at once.</li>
+<li><b>Test on unseen data:</b> train on earlier months, test on later ones.</li>
+<li><b>Spot odd days:</b> predict normal daily crime from weekday, month and holiday; flag big misses.</li>
+<li><b>Group crimes by timing:</b> cluster by 24-hour pattern (groups are loose, not sharp).</li>
+<li><b>Concentration:</b> crime is fairly spread out; the busiest 10% of police beats hold about 18% of crime.</li>
+</ol>
+
+<h2>9. Rulebook rules and how we follow them</h2>
+<table>
+<tr><th>Rule</th><th>Our answer</th></tr>
+<tr><td>Use Python</td><td>All analysis is in Python. The website only draws results.</td></tr>
+<tr><td>State the data source</td><td>Say it in the presentation (section 5, item 2).</td></tr>
+<tr><td>Don't fabricate data</td><td>Every number is computed; 44 automatic checks.</td></tr>
+<tr><td>Explain assumptions</td><td>A "Data trust" tab lists them all.</td></tr>
+<tr><td>No pre-made project</td><td>Everything was built during this session.</td></tr>
+<tr><td>Everyone can explain their part</td><td>Use sections 6, 7 and 8 as your cheat-sheet.</td></tr>
+</table>
+
+<h2>10. Judging marks and where we earn them</h2>
+<table>
+<tr><th>Criteria (marks)</th><th>What we show</th></tr>
+<tr><td>Understanding the theme (10)</td><td>The questions in section 5.1</td></tr>
+<tr><td>Data quality and relevance (15)</td><td>Source, coverage heat map, the "slice" finding</td></tr>
+<tr><td>Cleaning (10)</td><td>Date repair and the cleaning log</td></tr>
+<tr><td>Analytical approach (20)</td><td>Standardising, district index, held-out model, anomalies</td></tr>
+<tr><td>Visualisation (15)</td><td>10 required charts, map, meaningful colour, tooltips, filters</td></tr>
+<tr><td>Insights (15)</td><td>The findings with caveats</td></tr>
+<tr><td>Technical (10)</td><td>One-command pipeline, validation, type-checked website</td></tr>
+<tr><td>Presentation (5)</td><td>Welcome page, story tabs, Dot</td></tr>
+</table>
+
+<h2>11. Do's and don'ts</h2>
+<ul>
+<li><b>Do</b> say "appears to be from the City of Chicago portal".</li>
+<li><b>Do</b> mention the date swap. It shows you inspected the data.</li>
+<li><b>Don't</b> say "crime is falling" or "this district is dangerous".</li>
+<li><b>Don't</b> say Dot is an AI that knows everything. It answers only from our data.</li>
+<li><b>Do</b> let every team member practise one section.</li>
+</ul>
+
+<h2>12. Honest limitations</h2>
+<ul>
+<li>File is a slice, so no long-term trend claims. No population data, so no per-capita claims.</li>
+<li>Window B has almost no coordinates, and its arrest rate is probably understated.</li>
+<li>Models show association, not cause. Dot is rule-based.</li>
+<li>Only desktop sizes were tested. The pytest wrapper was not run (pytest not installed); the same 44 checks run inside run_all.py.</li>
+</ul>
+
+<h2>13. Folder map and how to run</h2>
+<div class="pipe">techverse_analysis/
+ |- run_all.py     runs the whole analysis + checks
+ |- src/           Python code
+ |- data/          cached and cleaned data
+ |- export/        JSON the website reads
+ |- reports/       analysis report + chart contact sheet
+ |- dashboard/     the React website  (npm run dev)</div>
+<p>Website: open cmd, go to the <b>dashboard</b> folder, run <span class="pill">npm install</span> then <span class="pill">npm run dev</span>, and open <b>http://localhost:5173</b>. Redo the analysis with <span class="pill">python run_all.py</span> in the parent folder.</p>
+
+<div class="foot">Chicago Crime Branch · Team Moleculens · TECHVERSE</div>
+</body></html>

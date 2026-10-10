@@ -1,0 +1,233 @@
+[
+ {
+  "column": "ID",
+  "dtype": "int64",
+  "null_count": 0,
+  "description": "Unique record id.",
+  "derived": false
+ },
+ {
+  "column": "Case Number",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "CPD case number (13 repeated across distinct ids: kept).",
+  "derived": false
+ },
+ {
+  "column": "Date",
+  "dtype": "datetime64[ns]",
+  "null_count": 0,
+  "description": "Incident timestamp. REPAIRED: Excel-converted cells had month/day swapped; swapped back.",
+  "derived": false
+ },
+ {
+  "column": "Block",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Partially redacted street block.",
+  "derived": false
+ },
+ {
+  "column": "IUCR",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Illinois Uniform Crime Reporting code.",
+  "derived": false
+ },
+ {
+  "column": "Primary Type",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Raw crime category (33 labels).",
+  "derived": false
+ },
+ {
+  "column": "Description",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Detailed offence description.",
+  "derived": false
+ },
+ {
+  "column": "Location Description",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Type of place; nulls filled 'UNKNOWN'.",
+  "derived": false
+ },
+ {
+  "column": "Arrest",
+  "dtype": "bool",
+  "null_count": 0,
+  "description": "True if an arrest was made.",
+  "derived": false
+ },
+ {
+  "column": "Domestic",
+  "dtype": "bool",
+  "null_count": 0,
+  "description": "True if domestic-related.",
+  "derived": false
+ },
+ {
+  "column": "Beat",
+  "dtype": "int64",
+  "null_count": 0,
+  "description": "Police beat code.",
+  "derived": false
+ },
+ {
+  "column": "District",
+  "dtype": "int64",
+  "null_count": 0,
+  "description": "Police district code.",
+  "derived": false
+ },
+ {
+  "column": "Ward",
+  "dtype": "Int64",
+  "null_count": 16478,
+  "description": "City ward (nullable).",
+  "derived": false
+ },
+ {
+  "column": "Community Area",
+  "dtype": "Int64",
+  "null_count": 19121,
+  "description": "Community area code (0 -> null).",
+  "derived": false
+ },
+ {
+  "column": "FBI Code",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "FBI classification code.",
+  "derived": false
+ },
+ {
+  "column": "X Coordinate",
+  "dtype": "float64",
+  "null_count": 327706,
+  "description": "State-plane x (nulled if outside Chicago).",
+  "derived": false
+ },
+ {
+  "column": "Y Coordinate",
+  "dtype": "float64",
+  "null_count": 327706,
+  "description": "State-plane y.",
+  "derived": false
+ },
+ {
+  "column": "Year",
+  "dtype": "int64",
+  "null_count": 0,
+  "description": "Year column from source (equals Date.year after repair).",
+  "derived": false
+ },
+ {
+  "column": "Latitude",
+  "dtype": "float64",
+  "null_count": 327706,
+  "description": "WGS84 latitude (nulled if outside Chicago bbox).",
+  "derived": false
+ },
+ {
+  "column": "Longitude",
+  "dtype": "float64",
+  "null_count": 327706,
+  "description": "WGS84 longitude.",
+  "derived": false
+ },
+ {
+  "column": "Primary Type Harmonised",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Primary Type with CRIM SEXUAL ASSAULT merged into CRIMINAL SEXUAL ASSAULT (32 labels).",
+  "derived": true
+ },
+ {
+  "column": "has_coords",
+  "dtype": "bool",
+  "null_count": 0,
+  "description": "Derived: coordinates present.",
+  "derived": true
+ },
+ {
+  "column": "hour",
+  "dtype": "int8",
+  "null_count": 0,
+  "description": "Derived: hour of Date.",
+  "derived": true
+ },
+ {
+  "column": "month",
+  "dtype": "int8",
+  "null_count": 0,
+  "description": "Derived: calendar month.",
+  "derived": true
+ },
+ {
+  "column": "month_start",
+  "dtype": "datetime64[ns]",
+  "null_count": 0,
+  "description": "Derived: first day of month (handout 'Month Start').",
+  "derived": true
+ },
+ {
+  "column": "day",
+  "dtype": "datetime64[ns]",
+  "null_count": 0,
+  "description": "Derived: calendar date.",
+  "derived": true
+ },
+ {
+  "column": "day_of_week",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Derived: weekday name.",
+  "derived": true
+ },
+ {
+  "column": "dow",
+  "dtype": "int8",
+  "null_count": 0,
+  "description": "Derived: 0=Monday.",
+  "derived": true
+ },
+ {
+  "column": "is_weekend",
+  "dtype": "bool",
+  "null_count": 0,
+  "description": "Derived: Sat/Sun.",
+  "derived": true
+ },
+ {
+  "column": "time_of_day",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Night 00:00-05:59, Morning 06:00-11:59, Afternoon 12:00-17:59, Evening 18:00-23:59 (hour of Date).",
+  "derived": true
+ },
+ {
+  "column": "season",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Winter Dec-Feb, Spring Mar-May, Summer Jun-Aug, Fall Sep-Nov (by month of Date).",
+  "derived": true
+ },
+ {
+  "column": "crime_category",
+  "dtype": "object",
+  "null_count": 0,
+  "description": "Violent: ASSAULT, BATTERY, ROBBERY, HOMICIDE, CRIM SEXUAL ASSAULT, CRIMINAL SEXUAL ASSAULT, KIDNAPPING. Property: THEFT, BURGLARY, MOTOR VEHICLE THEFT, CRIMINAL DAMAGE, ARSON. Other: everything else.",
+  "derived": true
+ },
+ {
+  "column": "default_time",
+  "dtype": "bool",
+  "null_count": 0,
+  "description": "Derived: timestamp is exactly 00:00 or 12:00 (frequently a placeholder for unknown time).",
+  "derived": true
+ }
+]

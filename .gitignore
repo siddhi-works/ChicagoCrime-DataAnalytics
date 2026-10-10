@@ -1,0 +1,19 @@
+# dependencies / builds
+node_modules/
+dashboard/dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vite/
+
+# large or regenerable data (rebuild with: python run_all.py)
+data/cache/
+data/processed/
+export/cube/cube.json
+export/cube/cube.parquet
+
+# logs / temp
+reports/*.txt
+reports/_*.html
+*.log
+.env

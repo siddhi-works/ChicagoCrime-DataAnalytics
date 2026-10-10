@@ -1,0 +1,1261 @@
+[
+ {
+  "id": "dq_date_repair",
+  "tier": "data_quality",
+  "headline": "424,638 dates had month and day swapped by Excel; we repaired them",
+  "text": "40% of the Date cells were stored as real datetimes (all with day <= 12), the rest as MM/DD/YYYY text. Excel read the ambiguous ones day-first. Swapping them back makes records dated after their own 'Updated On' stamp fall from 3.3% to 0.0%, and reproduces the handout's monthly chart.",
+  "evidence": {
+   "text_cells": 623937,
+   "excel_datetime_cells_swapped": 424638,
+   "unparseable": 0,
+   "year_matches_Year_col_after": 1.0,
+   "date_after_updated_on_share_before_repair": 0.03296,
+   "date_after_updated_on_share_after_repair": 0.0,
+   "month_swap_evidence": "Excel-converted cells have day<=12 only and a flat 'month' distribution; text cells have day>=13 only. Ambiguous cells were read day-first by Excel."
+  },
+  "method": "Compare text vs datetime cells; test day/month distributions; consistency with Updated On.",
+  "charts": [
+   "q01"
+  ],
+  "caveat": "The original workbook was not modified; the repair is applied in memory by src/clean.py."
+ },
+ {
+  "id": "dq_coverage",
+  "tier": "data_quality",
+  "headline": "Only two periods are dense: 2015-04-01 to 2017-07-31 and 2025-10-01 to 2026-08-31",
+  "text": "The file holds 1,048,575 records but 209,001 (19.9%) fall outside these two windows, at 300-900 records/month versus ~20,000. It looks like a truncated slice of a larger table (row count equals Excel's 1,048,576 row limit). Multi-year trends are therefore not supported; deep dives use window A (and window B for a before/after contrast).",
+  "evidence": {
+   "windows": {
+    "A": {
+     "start": "2015-04-01",
+     "end_exclusive": "2017-08-01",
+     "records": 627787,
+     "months": 28
+    },
+    "B": {
+     "start": "2025-10-01",
+     "end_exclusive": "2026-09-01",
+     "records": 211787,
+     "months": 11
+    },
+    "method": "Contiguous runs of >=60 days with >=200 records/day (windows.dense_windows), trimmed to whole calendar months. Outside these runs the file holds only 300-900 records/month."
+   },
+   "detected": [
+    {
+     "start": "2015-03-18",
+     "end": "2017-08-07",
+     "days": 874,
+     "records": 642167,
+     "mean_per_day": 734.744851
+    },
+    {
+     "start": "2025-09-28",
+     "end": "2026-09-22",
+     "days": 360,
+     "records": 228073,
+     "mean_per_day": 633.536111
+    }
+   ]
+  },
+  "method": "Daily record counts; contiguous runs >= 60 days with >= 200 records/day.",
+  "charts": [
+   "x_coverage_grid"
+  ],
+  "caveat": "Handout KPIs use the whole dataset, as required, so sparse years are included in K1-K5, K7, K8."
+ },
+ {
+  "id": "dq_missing_coords",
+  "tier": "data_quality",
+  "headline": "Coordinates are missing for 100.0% of window B but only 1.7% of window A",
+  "text": "Maps are only meaningful for window A. Within window A, missing coordinates concentrate in sensitive categories Sex Offense (14%), Offense Involving Children (13%), Criminal Sexual Assault (10%).",
+  "evidence": {
+   "A": {
+    "missing_share_overall": 0.016797,
+    "cramers_v_type": 0.232584,
+    "chi2": 33878.976682,
+    "highest_missing_types": {
+     "SEX OFFENSE": 0.1387,
+     "OFFENSE INVOLVING CHILDREN": 0.126,
+     "CRIMINAL SEXUAL ASSAULT": 0.1011,
+     "DECEPTIVE PRACTICE": 0.0991,
+     "NARCOTICS": 0.0573
+    },
+    "lowest_missing_types": {
+     "ROBBERY": 0.0007,
+     "GAMBLING": 0.0,
+     "PROSTITUTION": 0.0
+    }
+   },
+   "B": {
+    "missing_share_overall": 0.999608,
+    "cramers_v_type": 0.019523,
+    "chi2": 80.190901,
+    "highest_missing_types": {
+     "ASSAULT": 1.0,
+     "BATTERY": 1.0,
+     "BURGLARY": 1.0,
+     "CRIMINAL DAMAGE": 1.0,
+     "CRIMINAL TRESPASS": 1.0
+    },
+    "lowest_missing_types": {
+     "WEAPONS VIOLATION": 1.0,
+     "NARCOTICS": 0.9998,
+     "CRIMINAL SEXUAL ASSAULT": 0.9994
+    }
+   }
+  },
+  "method": "Share of records without latitude/longitude by window and crime type; chi-square / Cramer's V.",
+  "charts": [
+   "x_district_lq"
+  ],
+  "caveat": "District, beat and ward remain available in window B."
+ },
+ {
+  "id": "dq_first_of_month",
+  "tier": "data_quality",
+  "headline": "Records dated on the 1st of a month are inflated: Sex Offense is 4.4x over-represented",
+  "text": "If dates were uniform, ~3.3% of each type would fall on the 1st; Sex Offense has 14.4%. Day-1 records also carry placeholder times 9.0% of the time vs 3.6% on other days. This is consistent with reports where the exact date is unknown being booked to the 1st (~4,819 excess records in window A). It also explains the largest daily 'anomalies'.",
+  "evidence": {
+   "day1_records": 25438,
+   "day1_per_month": 908.5,
+   "avg_other_day_per_month": 731.716472,
+   "default_time_share_day1": 0.089748,
+   "default_time_share_other": 0.036019,
+   "excess_total": 4819.457216
+  },
+  "method": "Share of each type on day 1 vs 1/average month length.",
+  "charts": [
+   "x_first_of_month",
+   "x_anomalies"
+  ],
+  "caveat": "An explanation, not proof: the data has no field stating that a date was estimated."
+ },
+ {
+  "id": "dq_placeholder_time",
+  "tier": "data_quality",
+  "headline": "Night-time share is 17.7% as defined, but 15.8% without placeholder timestamps",
+  "text": "5.5% of records are stamped exactly 00:00 or 12:00 (41% of all midnight-hour records, 45% of noon-hour records), far more than a smooth clock would give. K7 is reported as the handout defines it, with the sensitivity value alongside.",
+  "evidence": {
+   "K7": {
+    "id": "K7",
+    "label": "Night-time crime (00:00-05:59)",
+    "value": 17.734163,
+    "unit": "%",
+    "formula": "Time of Day=Night / total",
+    "numerator": 185956,
+    "denominator": 1048575,
+    "sensitivity_value": 15.843775,
+    "sensitivity_note": "Excluding 57,902 records stamped exactly 00:00/12:00 (placeholder-time artefact). Handout-literal value is `value`."
+   },
+   "records": 57902,
+   "share": 0.05522,
+   "share_of_hour_0": 0.411577,
+   "share_of_hour_12": 0.454104
+  },
+  "method": "Share of records at exact 00:00/12:00 within each hour.",
+  "charts": [
+   "q03",
+   "q06",
+   "q10"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "seasonality",
+  "tier": "headline",
+  "headline": "Summer days see 17% more crime than winter days",
+  "text": "In window A the daily average is 788 in Jun-Aug vs 674 in Dec-Feb (ratio 1.17, 95% CI 1.14-1.19; Kruskal-Wallis p=2.0e-59). Biggest swing: Weapons Violation x1.46; smallest: Deceptive Practice x0.92.",
+  "evidence": {
+   "summer_per_day": 787.934694,
+   "winter_per_day": 674.243094,
+   "ratio": 1.168621,
+   "ci_lo": 1.143516,
+   "ci_hi": 1.19343,
+   "kruskal_H": 275.446848,
+   "kruskal_p": 0.0,
+   "n_days": 853,
+   "top_type": {
+    "crime_type": "WEAPONS VIOLATION",
+    "summer_per_day": 11.983673,
+    "winter_per_day": 8.21547,
+    "summer_winter_ratio": 1.458672,
+    "ci_lo": 1.345947,
+    "ci_hi": 1.590641,
+    "records": 4423
+   },
+   "bottom_type": {
+    "crime_type": "DECEPTIVE PRACTICE",
+    "summer_per_day": 48.583673,
+    "winter_per_day": 53.077348,
+    "summer_winter_ratio": 0.915337,
+    "ci_lo": 0.842833,
+    "ci_hi": 0.993937,
+    "records": 21510
+   }
+  },
+  "method": "Daily counts by season; bootstrap ratio over days (2000 resamples); per-type ratios.",
+  "charts": [
+   "q01",
+   "q04",
+   "x_month_per_day",
+   "x_season_types"
+  ],
+  "caveat": "Window A spans 28 months; Mar-Dec seen twice at most, so month-level estimates carry year-specific noise."
+ },
+ {
+  "id": "weekday",
+  "tier": "supporting",
+  "headline": "Weekday barely matters (Friday is highest at +4.6% vs average)",
+  "text": "Per-day volumes differ by only a few percent (Cohen's w = 0.020, a very small effect) even though chi-square is huge at n=627,787. Statistical significance at this sample size says little; the effect size is what matters.",
+  "evidence": {
+   "chi2": 259.645183,
+   "cohens_w": 0.020337,
+   "n": 627787
+  },
+  "method": "Chi-square goodness of fit vs per-day exposure; exact Poisson CIs; Cohen's w.",
+  "charts": [
+   "q02",
+   "x_dow_index"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "nights_weekend",
+  "tier": "headline",
+  "headline": "Weekend nights run 69% above weekday nights; the daily peak is around 18:00",
+  "text": "Excluding placeholder timestamps, between 00:00 and 05:59 a weekend day logs 1.69x the crimes of a weekday. The quietest hour is 05:00. The hour-by-weekday heat map is the single most informative view of timing.",
+  "evidence": {
+   "weekend_night_ratio": 1.689904,
+   "peak_hour": 18,
+   "quiet_hour": 5
+  },
+  "method": "Crimes per calendar day by weekday and hour (window A, placeholder times excluded).",
+  "charts": [
+   "q10",
+   "x_hour_dow_heatmap",
+   "x_hour_profile"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "arrest_simpson",
+  "tier": "headline",
+  "headline": "86% of the raw night-to-evening arrest-rate gap is explained by crime-type mix",
+  "text": "Raw arrest rate rises from 18.1% (night) to 25.4% (evening), a 7.3-pt gap. After standardising to the overall crime-type mix the gap is 1.0 pts (21.4% vs 22.4%). Narcotics make up 2.3% of night crimes but 8.1% of evening crimes, and 100% of narcotics records end in arrest (vs 22% overall).",
+  "evidence": {
+   "rows": [
+    {
+     "time_of_day": "Night",
+     "crimes": 99471,
+     "raw_rate_pct": 18.098742,
+     "standardised_rate_pct": 21.409563,
+     "raw_ci_lo": 17.860712,
+     "raw_ci_hi": 18.339237,
+     "narcotics_share_pct": 2.299163
+    },
+    {
+     "time_of_day": "Morning",
+     "crimes": 133513,
+     "raw_rate_pct": 18.9607,
+     "standardised_rate_pct": 20.336634,
+     "raw_ci_lo": 18.751329,
+     "raw_ci_hi": 19.171859,
+     "narcotics_share_pct": 5.839132
+    },
+    {
+     "time_of_day": "Afternoon",
+     "crimes": 198650,
+     "raw_rate_pct": 21.542411,
+     "standardised_rate_pct": 21.886453,
+     "raw_ci_lo": 21.362172,
+     "raw_ci_hi": 21.723752,
+     "narcotics_share_pct": 5.753838
+    },
+    {
+     "time_of_day": "Evening",
+     "crimes": 196153,
+     "raw_rate_pct": 25.371521,
+     "standardised_rate_pct": 22.395754,
+     "raw_ci_lo": 25.179437,
+     "raw_ci_hi": 25.56457,
+     "narcotics_share_pct": 8.096741
+    }
+   ]
+  },
+  "method": "Direct standardisation of time-of-day arrest rates to the overall crime-type distribution.",
+  "charts": [
+   "q06",
+   "x_arrest_tod_standardised"
+  ],
+  "caveat": "Standardisation adjusts for observed crime type only; other confounders may remain."
+ },
+ {
+  "id": "arrest_district",
+  "tier": "headline",
+  "headline": "District arrest rates vs what their crime mix predicts: 6 above, 9 below",
+  "text": "District 11 has the highest arrest rate among the top-10 districts by volume (38.3%). Given its crime-type mix we would expect 39.5%, an index of 0.98 (95% CI 0.97-1.00) - i.e. it is explained by what is reported there. After adjustment 6 districts are above expectation (largest: District 1, index 1.23) and 9 below (lowest: District 2, index 0.85).",
+  "evidence": {
+   "rows": [
+    {
+     "District": 1,
+     "crimes": 31604,
+     "arrests": 6083,
+     "expected": 4931.58254,
+     "raw_rate_pct": 19.247564,
+     "expected_rate_pct": 15.604299,
+     "sir": 1.233478,
+     "sir_lo": 1.202674,
+     "sir_hi": 1.264872,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "above expected"
+    },
+    {
+     "District": 6,
+     "crimes": 38194,
+     "arrests": 9024,
+     "expected": 8225.850834,
+     "raw_rate_pct": 23.626748,
+     "expected_rate_pct": 21.537024,
+     "sir": 1.097029,
+     "sir_lo": 1.07451,
+     "sir_hi": 1.119901,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "above expected"
+    },
+    {
+     "District": 5,
+     "crimes": 27224,
+     "arrests": 6716,
+     "expected": 6132.05326,
+     "raw_rate_pct": 24.669409,
+     "expected_rate_pct": 22.524439,
+     "sir": 1.095229,
+     "sir_lo": 1.06919,
+     "sir_hi": 1.121741,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "above expected"
+    },
+    {
+     "District": 18,
+     "crimes": 30282,
+     "arrests": 4913,
+     "expected": 4591.437299,
+     "raw_rate_pct": 16.22416,
+     "expected_rate_pct": 15.162266,
+     "sir": 1.070035,
+     "sir_lo": 1.040321,
+     "sir_hi": 1.100383,
+     "p_value": 3e-06,
+     "p_fdr": 5e-06,
+     "flag": "above expected"
+    },
+    {
+     "District": 25,
+     "crimes": 34306,
+     "arrests": 7726,
+     "expected": 7279.055405,
+     "raw_rate_pct": 22.520842,
+     "expected_rate_pct": 21.218024,
+     "sir": 1.061401,
+     "sir_lo": 1.037864,
+     "sir_hi": 1.085338,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "above expected"
+    },
+    {
+     "District": 7,
+     "crimes": 34686,
+     "arrests": 10175,
+     "expected": 9606.013363,
+     "raw_rate_pct": 29.334602,
+     "expected_rate_pct": 27.694209,
+     "sir": 1.059232,
+     "sir_lo": 1.03875,
+     "sir_hi": 1.080017,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "above expected"
+    },
+    {
+     "District": 20,
+     "crimes": 10213,
+     "arrests": 1908,
+     "expected": 1832.384255,
+     "raw_rate_pct": 18.682072,
+     "expected_rate_pct": 17.941685,
+     "sir": 1.041266,
+     "sir_lo": 0.995063,
+     "sir_hi": 1.089061,
+     "p_value": 0.080662,
+     "p_fdr": 0.098587,
+     "flag": "in line"
+    },
+    {
+     "District": 9,
+     "crimes": 29267,
+     "arrests": 6609,
+     "expected": 6450.617285,
+     "raw_rate_pct": 22.581747,
+     "expected_rate_pct": 22.040583,
+     "sir": 1.024553,
+     "sir_lo": 0.999999,
+     "sir_hi": 1.049558,
+     "p_value": 0.050007,
+     "p_fdr": 0.06876,
+     "flag": "in line"
+    },
+    {
+     "District": 10,
+     "crimes": 29008,
+     "arrests": 7706,
+     "expected": 7589.451655,
+     "raw_rate_pct": 26.565085,
+     "expected_rate_pct": 26.163305,
+     "sir": 1.015357,
+     "sir_lo": 0.992812,
+     "sir_hi": 1.038284,
+     "p_value": 0.183312,
+     "p_fdr": 0.212256,
+     "flag": "in line"
+    },
+    {
+     "District": 4,
+     "crimes": 35597,
+     "arrests": 7648,
+     "expected": 7572.493709,
+     "raw_rate_pct": 21.484957,
+     "expected_rate_pct": 21.272842,
+     "sir": 1.009971,
+     "sir_lo": 0.987461,
+     "sir_hi": 1.032865,
+     "p_value": 0.388447,
+     "p_fdr": 0.388447,
+     "flag": "in line"
+    },
+    {
+     "District": 3,
+     "crimes": 29733,
+     "arrests": 5902,
+     "expected": 5992.719803,
+     "raw_rate_pct": 19.849998,
+     "expected_rate_pct": 20.155113,
+     "sir": 0.984862,
+     "sir_lo": 0.959894,
+     "sir_hi": 1.010314,
+     "p_value": 0.243524,
+     "p_fdr": 0.267876,
+     "flag": "in line"
+    },
+    {
+     "District": 19,
+     "crimes": 28253,
+     "arrests": 4437,
+     "expected": 4509.446547,
+     "raw_rate_pct": 15.704527,
+     "expected_rate_pct": 15.960948,
+     "sir": 0.983934,
+     "sir_lo": 0.955194,
+     "sir_hi": 1.01332,
+     "p_value": 0.283823,
+     "p_fdr": 0.297338,
+     "flag": "in line"
+    },
+    {
+     "District": 11,
+     "crimes": 43983,
+     "arrests": 17035,
+     "expected": 17375.154076,
+     "raw_rate_pct": 38.730873,
+     "expected_rate_pct": 39.50425,
+     "sir": 0.980423,
+     "sir_lo": 0.965755,
+     "sir_hi": 0.995258,
+     "p_value": 0.009768,
+     "p_fdr": 0.01473,
+     "flag": "below expected"
+    },
+    {
+     "District": 8,
+     "crimes": 40363,
+     "arrests": 7519,
+     "expected": 7673.539444,
+     "raw_rate_pct": 18.628447,
+     "expected_rate_pct": 19.011321,
+     "sir": 0.979861,
+     "sir_lo": 0.957837,
+     "sir_hi": 1.002264,
+     "p_value": 0.077986,
+     "p_fdr": 0.098587,
+     "flag": "in line"
+    },
+    {
+     "District": 15,
+     "crimes": 26407,
+     "arrests": 7921,
+     "expected": 8153.006058,
+     "raw_rate_pct": 29.995834,
+     "expected_rate_pct": 30.874412,
+     "sir": 0.971543,
+     "sir_lo": 0.950265,
+     "sir_hi": 0.993179,
+     "p_value": 0.010043,
+     "p_fdr": 0.01473,
+     "flag": "below expected"
+    },
+    {
+     "District": 24,
+     "crimes": 17350,
+     "arrests": 2964,
+     "expected": 3182.317485,
+     "raw_rate_pct": 17.083573,
+     "expected_rate_pct": 18.341888,
+     "sir": 0.931397,
+     "sir_lo": 0.898165,
+     "sir_hi": 0.965544,
+     "p_value": 9.5e-05,
+     "p_fdr": 0.00016,
+     "flag": "below expected"
+    },
+    {
+     "District": 22,
+     "crimes": 20253,
+     "arrests": 3566,
+     "expected": 3901.091928,
+     "raw_rate_pct": 17.607268,
+     "expected_rate_pct": 19.261798,
+     "sir": 0.914103,
+     "sir_lo": 0.884344,
+     "sir_hi": 0.944608,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    },
+    {
+     "District": 16,
+     "crimes": 21675,
+     "arrests": 3695,
+     "expected": 4154.332198,
+     "raw_rate_pct": 17.04729,
+     "expected_rate_pct": 19.166469,
+     "sir": 0.889433,
+     "sir_lo": 0.860983,
+     "sir_hi": 0.918583,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    },
+    {
+     "District": 17,
+     "crimes": 18043,
+     "arrests": 2517,
+     "expected": 2908.379352,
+     "raw_rate_pct": 13.950008,
+     "expected_rate_pct": 16.119156,
+     "sir": 0.86543,
+     "sir_lo": 0.831948,
+     "sir_hi": 0.899915,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    },
+    {
+     "District": 14,
+     "crimes": 23266,
+     "arrests": 3106,
+     "expected": 3612.265575,
+     "raw_rate_pct": 13.349953,
+     "expected_rate_pct": 15.525942,
+     "sir": 0.859848,
+     "sir_lo": 0.829872,
+     "sir_hi": 0.89063,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    },
+    {
+     "District": 12,
+     "crimes": 31525,
+     "arrests": 4572,
+     "expected": 5355.495487,
+     "raw_rate_pct": 14.502776,
+     "expected_rate_pct": 16.98809,
+     "sir": 0.853703,
+     "sir_lo": 0.829134,
+     "sir_hi": 0.878814,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    },
+    {
+     "District": 2,
+     "crimes": 26464,
+     "arrests": 4121,
+     "expected": 4838.188368,
+     "raw_rate_pct": 15.572098,
+     "expected_rate_pct": 18.282151,
+     "sir": 0.851765,
+     "sir_lo": 0.825956,
+     "sir_hi": 0.878176,
+     "p_value": 0.0,
+     "p_fdr": 0.0,
+     "flag": "below expected"
+    }
+   ]
+  },
+  "method": "Indirect standardisation (SIR) with exact Poisson CIs and Benjamini-Hochberg FDR across districts.",
+  "charts": [
+   "q09",
+   "x_district_sir"
+  ],
+  "caveat": "Screening result; CIs ignore overdispersion and spatial correlation."
+ },
+ {
+  "id": "arrest_drivers",
+  "tier": "headline",
+  "headline": "What was reported predicts arrest far better than when or where (AUC 0.86 on unseen later months)",
+  "text": "Trained on records before 2017-01-01 (474,279) and tested on later ones (153,508): logistic AUC 0.837, gradient boosting 0.865. Shuffling crime_type costs 0.310 AUC, location 0.100, while time of day plus weekday together cost 0.005. Brier score improves from 0.162 (base rate) to 0.095.",
+  "evidence": {
+   "train_n": 474279,
+   "test_n": 153508,
+   "test_from": "2017-01-01",
+   "auc_logistic": 0.836538,
+   "brier_logistic": 0.103012,
+   "brier_baseline": 0.162232,
+   "bootstrap_reps": 15,
+   "auc_gradient_boosting": 0.864816,
+   "brier_gradient_boosting": 0.094833,
+   "importance": [
+    {
+     "feature": "crime_type",
+     "auc_drop": 0.310163,
+     "auc_drop_sd": 0.002924
+    },
+    {
+     "feature": "location",
+     "auc_drop": 0.099625,
+     "auc_drop_sd": 0.001702
+    },
+    {
+     "feature": "district",
+     "auc_drop": 0.009704,
+     "auc_drop_sd": 0.000315
+    },
+    {
+     "feature": "domestic",
+     "auc_drop": 0.007085,
+     "auc_drop_sd": 0.000384
+    },
+    {
+     "feature": "time_of_day",
+     "auc_drop": 0.005002,
+     "auc_drop_sd": 0.000341
+    },
+    {
+     "feature": "day_of_week",
+     "auc_drop": 0.000237,
+     "auc_drop_sd": 9.7e-05
+    },
+    {
+     "feature": "weekend",
+     "auc_drop": -1e-06,
+     "auc_drop_sd": 4e-06
+    }
+   ]
+  },
+  "method": "Temporal hold-out; permutation importance; calibration deciles.",
+  "charts": [
+   "x_arrest_importance",
+   "x_arrest_odds_ratios",
+   "x_arrest_calibration"
+  ],
+  "caveat": "Predictive association, not causal; arrest outcomes can also be recorded after the report."
+ },
+ {
+  "id": "era_change",
+  "tier": "headline",
+  "headline": "Daily crime in window B is 14% below window A; Motor Vehicle Theft changed most (+68%)",
+  "text": "Matching calendar months, window B averages 632 crimes/day vs 733 in window A (ratio 0.86, 95% CI 0.85-0.87). Largest rise: Motor Vehicle Theft (+68%); largest fall: Prostitution (-84%). Arrest rate 21.6% -> 15.4%.",
+  "evidence": {
+   "months_matched": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12
+   ],
+   "per_day_A": 732.783102,
+   "per_day_B": 632.2,
+   "ratio_B_over_A": 0.862738,
+   "ci_lo": 0.850695,
+   "ci_hi": 0.874764,
+   "arrest_rate_A": 21.646472,
+   "arrest_rate_B": 15.440041,
+   "days_A": 793,
+   "days_B": 335,
+   "table": [
+    {
+     "level": "type",
+     "name": "PROSTITUTION",
+     "per_day_A": 2.600252,
+     "per_day_B": 0.41791,
+     "change_pct": -83.92808,
+     "share_A": 0.354846,
+     "share_B": 0.066104
+    },
+    {
+     "level": "type",
+     "name": "NARCOTICS",
+     "per_day_A": 43.445145,
+     "per_day_B": 17.749254,
+     "change_pct": -59.145599,
+     "share_A": 5.928786,
+     "share_B": 2.807538
+    },
+    {
+     "level": "type",
+     "name": "ROBBERY",
+     "per_day_A": 30.447667,
+     "per_day_B": 13.176119,
+     "change_pct": -56.725356,
+     "share_A": 4.155072,
+     "share_B": 2.084169
+    },
+    {
+     "level": "type",
+     "name": "OFFENSE INVOLVING CHILDREN",
+     "per_day_A": 6.544767,
+     "per_day_B": 4.220896,
+     "change_pct": -35.507319,
+     "share_A": 0.893138,
+     "share_B": 0.667652
+    },
+    {
+     "level": "type",
+     "name": "PUBLIC PEACE VIOLATION",
+     "per_day_A": 5.071879,
+     "per_day_B": 3.307463,
+     "change_pct": -34.788217,
+     "share_A": 0.692139,
+     "share_B": 0.523167
+    },
+    {
+     "level": "type",
+     "name": "DECEPTIVE PRACTICE",
+     "per_day_A": 49.69483,
+     "per_day_B": 37.262687,
+     "change_pct": -25.016975,
+     "share_A": 6.781656,
+     "share_B": 5.894129
+    },
+    {
+     "level": "type",
+     "name": "BATTERY",
+     "per_day_A": 137.244641,
+     "per_day_B": 115.229851,
+     "change_pct": -16.040546,
+     "share_A": 18.729231,
+     "share_B": 18.226803
+    },
+    {
+     "level": "type",
+     "name": "THEFT",
+     "per_day_A": 165.974779,
+     "per_day_B": 139.453731,
+     "change_pct": -15.978963,
+     "share_A": 22.649919,
+     "share_B": 22.058483
+    },
+    {
+     "level": "type",
+     "name": "CRIMINAL DAMAGE",
+     "per_day_A": 82.706179,
+     "per_day_B": 70.385075,
+     "change_pct": -14.897441,
+     "share_A": 11.286584,
+     "share_B": 11.133356
+    },
+    {
+     "level": "type",
+     "name": "CRIMINAL TRESPASS",
+     "per_day_A": 17.783102,
+     "per_day_B": 15.20597,
+     "change_pct": -14.492027,
+     "share_A": 2.426789,
+     "share_B": 2.405247
+    },
+    {
+     "level": "type",
+     "name": "INTERFERENCE WITH PUBLIC OFFICER",
+     "per_day_A": 2.984868,
+     "per_day_B": 2.632836,
+     "change_pct": -11.793882,
+     "share_A": 0.407333,
+     "share_B": 0.416456
+    },
+    {
+     "level": "type",
+     "name": "OTHER OFFENSE",
+     "per_day_A": 48.337957,
+     "per_day_B": 42.877612,
+     "change_pct": -11.296185,
+     "share_A": 6.596489,
+     "share_B": 6.782286
+    },
+    {
+     "level": "type",
+     "name": "BURGLARY",
+     "per_day_A": 37.586381,
+     "per_day_B": 35.952239,
+     "change_pct": -4.347697,
+     "share_A": 5.129264,
+     "share_B": 5.686846
+    },
+    {
+     "level": "type",
+     "name": "ASSAULT",
+     "per_day_A": 50.587642,
+     "per_day_B": 56.379104,
+     "change_pct": 11.448374,
+     "share_A": 6.903495,
+     "share_B": 8.917922
+    },
+    {
+     "level": "type",
+     "name": "CRIMINAL SEXUAL ASSAULT",
+     "per_day_A": 4.297604,
+     "per_day_B": 4.868657,
+     "change_pct": 13.287699,
+     "share_A": 0.586477,
+     "share_B": 0.770113
+    },
+    {
+     "level": "type",
+     "name": "WEAPONS VIOLATION",
+     "per_day_A": 10.254729,
+     "per_day_B": 13.38806,
+     "change_pct": 30.554985,
+     "share_A": 1.399422,
+     "share_B": 2.117694
+    },
+    {
+     "level": "type",
+     "name": "SEX OFFENSE",
+     "per_day_A": 2.848676,
+     "per_day_B": 3.886567,
+     "change_pct": 36.434164,
+     "share_A": 0.388747,
+     "share_B": 0.614769
+    },
+    {
+     "level": "type",
+     "name": "MOTOR VEHICLE THEFT",
+     "per_day_A": 29.954603,
+     "per_day_B": 50.325373,
+     "change_pct": 68.005477,
+     "share_A": 4.087786,
+     "share_B": 7.960356
+    }
+   ]
+  },
+  "method": "Seasonally matched calendar months; bootstrap ratio of daily counts.",
+  "charts": [
+   "x_era_change",
+   "x_era_category"
+  ],
+  "caveat": "Two windows ~10 years apart, not a trend. Window B is recent: arrests recorded later are missing (its arrest rate is likely understated) and, because the file is a slice, B may also be less complete than A."
+ },
+ {
+  "id": "domestic",
+  "tier": "supporting",
+  "headline": "Domestic crime: 18.3% of all records, led by Battery",
+  "text": "18.3% of all crimes are domestic. For battery the figure is 56%. The domestic share is highest around 02:00 (26%) and lowest around 15:00 (15%).",
+  "evidence": {
+   "K3": {
+    "id": "K3",
+    "label": "Domestic crime",
+    "value": 18.340128,
+    "unit": "%",
+    "formula": "Domestic=TRUE / total",
+    "numerator": 192310,
+    "denominator": 1048575
+   },
+   "by_type": [
+    {
+     "crime_type": "BATTERY",
+     "domestic_n": 65341,
+     "non_domestic_n": 52081,
+     "domestic_arrest_pct": 22.46216,
+     "non_domestic_arrest_pct": 20.068739,
+     "domestic_share_pct": 55.646301
+    },
+    {
+     "crime_type": "OTHER OFFENSE",
+     "domestic_n": 15388,
+     "non_domestic_n": 25701,
+     "domestic_arrest_pct": 12.126332,
+     "non_domestic_arrest_pct": 29.528034,
+     "domestic_share_pct": 37.450413
+    },
+    {
+     "crime_type": "ASSAULT",
+     "domestic_n": 12893,
+     "non_domestic_n": 30447,
+     "domestic_arrest_pct": 18.428605,
+     "non_domestic_arrest_pct": 20.694978,
+     "domestic_share_pct": 29.7485
+    },
+    {
+     "crime_type": "CRIMINAL DAMAGE",
+     "domestic_n": 9134,
+     "non_domestic_n": 61815,
+     "domestic_arrest_pct": 12.995402,
+     "non_domestic_arrest_pct": 4.731861,
+     "domestic_share_pct": 12.874036
+    },
+    {
+     "crime_type": "THEFT",
+     "domestic_n": 6249,
+     "non_domestic_n": 136283,
+     "domestic_arrest_pct": 5.808929,
+     "non_domestic_arrest_pct": 11.019716,
+     "domestic_share_pct": 4.384279
+    },
+    {
+     "crime_type": "OFFENSE INVOLVING CHILDREN",
+     "domestic_n": 4433,
+     "non_domestic_n": 1137,
+     "domestic_arrest_pct": 16.106474,
+     "non_domestic_arrest_pct": 13.456464,
+     "domestic_share_pct": 79.587074
+    },
+    {
+     "crime_type": "CRIMINAL TRESPASS",
+     "domestic_n": 880,
+     "non_domestic_n": 14288,
+     "domestic_arrest_pct": 34.431818,
+     "non_domestic_arrest_pct": 63.787794,
+     "domestic_share_pct": 5.801688
+    },
+    {
+     "crime_type": "CRIMINAL SEXUAL ASSAULT",
+     "domestic_n": 804,
+     "non_domestic_n": 2874,
+     "domestic_arrest_pct": 20.149254,
+     "non_domestic_arrest_pct": 8.002784,
+     "domestic_share_pct": 21.859706
+    }
+   ]
+  },
+  "method": "Domestic share by type and hour (window A).",
+  "charts": [
+   "q08",
+   "x_domestic_vs_non",
+   "x_domestic_by_hour"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "places",
+  "tier": "supporting",
+  "headline": "Arrest rate ranges 4%-52% across the top 15 locations; domestic share 1%-48%",
+  "text": "Street is the largest location (22% of crimes). Residence/apartment crimes are 44% domestic with only 14% arrested, while Sidewalk has 39% arrested.",
+  "evidence": {
+   "rows": [
+    {
+     "Location Description": "STREET",
+     "crimes": 141247,
+     "arrest_rate_pct": 21.296736,
+     "domestic_share_pct": 9.444448,
+     "share_pct": 22.499192
+    },
+    {
+     "Location Description": "RESIDENCE",
+     "crimes": 104790,
+     "arrest_rate_pct": 11.66619,
+     "domestic_share_pct": 39.204123,
+     "share_pct": 16.691967
+    },
+    {
+     "Location Description": "APARTMENT",
+     "crimes": 80769,
+     "arrest_rate_pct": 15.567854,
+     "domestic_share_pct": 48.439376,
+     "share_pct": 12.865669
+    },
+    {
+     "Location Description": "SIDEWALK",
+     "crimes": 58324,
+     "arrest_rate_pct": 39.38173,
+     "domestic_share_pct": 13.64104,
+     "share_pct": 9.290412
+    },
+    {
+     "Location Description": "OTHER",
+     "crimes": 25763,
+     "arrest_rate_pct": 11.116718,
+     "domestic_share_pct": 8.617009,
+     "share_pct": 4.10378
+    },
+    {
+     "Location Description": "PARKING LOT/GARAGE(NON.RESID.)",
+     "crimes": 18600,
+     "arrest_rate_pct": 18.682796,
+     "domestic_share_pct": 6.903226,
+     "share_pct": 2.962788
+    },
+    {
+     "Location Description": "SMALL RETAIL STORE",
+     "crimes": 13821,
+     "arrest_rate_pct": 25.707257,
+     "domestic_share_pct": 1.222777,
+     "share_pct": 2.201543
+    },
+    {
+     "Location Description": "RESTAURANT",
+     "crimes": 13307,
+     "arrest_rate_pct": 15.164951,
+     "domestic_share_pct": 2.960848,
+     "share_pct": 2.119668
+    },
+    {
+     "Location Description": "RESIDENTIAL YARD (FRONT/BACK)",
+     "crimes": 13267,
+     "arrest_rate_pct": 21.949197,
+     "domestic_share_pct": 14.291098,
+     "share_pct": 2.113296
+    },
+    {
+     "Location Description": "ALLEY",
+     "crimes": 12867,
+     "arrest_rate_pct": 36.123416,
+     "domestic_share_pct": 11.113702,
+     "share_pct": 2.049581
+    }
+   ]
+  },
+  "method": "Group by Location Description (window A).",
+  "charts": [
+   "x_location_profile",
+   "x_location_by_type"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "spatial",
+  "tier": "supporting",
+  "headline": "Crime is spread widely: the busiest 10% of beats hold 18% of crimes",
+  "text": "Beat-level Gini = 0.21 over 275 beats; the top 20% of beats hold 32%. Districts specialise instead: District 11 over-indexes on Narcotics (location quotient 3.7).",
+  "evidence": {
+   "beats": 275,
+   "gini": 0.209287,
+   "top10pct_beats_share": 0.181519,
+   "top20pct_beats_share": 0.316756,
+   "top_lq": [
+    {
+     "District": 11,
+     "crime_type": "NARCOTICS",
+     "lq": 3.741955,
+     "crimes": 9805
+    },
+    {
+     "District": 15,
+     "crime_type": "NARCOTICS",
+     "lq": 2.474578,
+     "crimes": 3893
+    },
+    {
+     "District": 1,
+     "crime_type": "THEFT",
+     "lq": 2.116588,
+     "crimes": 15189
+    },
+    {
+     "District": 18,
+     "crime_type": "THEFT",
+     "lq": 2.063848,
+     "crimes": 14191
+    },
+    {
+     "District": 7,
+     "crime_type": "WEAPONS VIOLATION",
+     "lq": 2.026069,
+     "crimes": 983
+    },
+    {
+     "District": 18,
+     "crime_type": "DECEPTIVE PRACTICE",
+     "lq": 2.023902,
+     "crimes": 4136
+    },
+    {
+     "District": 1,
+     "crime_type": "DECEPTIVE PRACTICE",
+     "lq": 1.98941,
+     "crimes": 4243
+    },
+    {
+     "District": 5,
+     "crime_type": "WEAPONS VIOLATION",
+     "lq": 1.882877,
+     "crimes": 717
+    },
+    {
+     "District": 10,
+     "crime_type": "WEAPONS VIOLATION",
+     "lq": 1.779403,
+     "crimes": 722
+    },
+    {
+     "District": 19,
+     "crime_type": "DECEPTIVE PRACTICE",
+     "lq": 1.685678,
+     "crimes": 3214
+    }
+   ]
+  },
+  "method": "Lorenz/Gini on beat counts; district x type location quotients (window A).",
+  "charts": [
+   "x_beat_lorenz",
+   "x_district_lq"
+  ],
+  "caveat": "No population or area denominators in the data, so no per-capita claims."
+ },
+ {
+  "id": "hourly_clusters",
+  "tier": "supporting",
+  "headline": "Crime types fall into 3 groups by when they happen",
+  "text": "Peak ~09:00: Deceptive Practice, Offense Involving Children; Peak ~19:00: Assault, Burglary, Criminal Trespass, Narcotics, Other Offense; Peak ~22:00: Battery, Criminal Damage, Criminal Sexual Assault, Motor Vehicle Theft, Robbery. Silhouette = 0.28 (descriptive).",
+  "evidence": {
+   "k": 3,
+   "silhouette": 0.276527
+  },
+  "method": "k-means on normalised 24-hour profiles; k by silhouette.",
+  "charts": [
+   "x_type_hour_clusters"
+  ],
+  "caveat": "Groups are not sharply separated."
+ },
+ {
+  "id": "model_check",
+  "tier": "supporting",
+  "headline": "A weekday + month + holiday model predicts unseen daily counts to within 6.7% on average",
+  "text": "Hold-out MAPE for Jan-Jul 2017 is 6.7% vs 8.2% for 'same weekday last week'. 9 of the 12 largest anomalies fall on the 1st of a month (see placeholder dates); the largest non-1st anomaly is 2017-03-14 (471 vs 675 expected).",
+  "evidence": {
+   "holdout_from": "2017-01-01",
+   "holdout_days": 212,
+   "mape_glm": 0.067489,
+   "mape_same_weekday_last_week": 0.082209,
+   "mad_sigma": 1.892233,
+   "holiday_coef": -0.017709
+  },
+  "method": "Poisson GLM, train 2015-04..2016-12, test 2017-01..07; robust MAD z for anomalies.",
+  "charts": [
+   "x_daily_expected",
+   "x_anomalies"
+  ],
+  "caveat": null
+ },
+ {
+  "id": "handout_overview",
+  "tier": "headline",
+  "headline": "1,048,575 crimes; 20.5% led to arrest; 29% were violent",
+  "text": "Theft (236,314) and battery (185,608) lead the 10 top types. District 11 records the most crimes (69,214).",
+  "evidence": {
+   "kpis": [
+    {
+     "id": "K1",
+     "label": "Total crimes",
+     "value": 1048575,
+     "unit": "count",
+     "formula": "rows in dataset",
+     "numerator": null,
+     "denominator": null
+    },
+    {
+     "id": "K2",
+     "label": "Arrest rate",
+     "value": 20.489331,
+     "unit": "%",
+     "formula": "Arrest=TRUE / total",
+     "numerator": 214846,
+     "denominator": 1048575
+    },
+    {
+     "id": "K3",
+     "label": "Domestic crime",
+     "value": 18.340128,
+     "unit": "%",
+     "formula": "Domestic=TRUE / total",
+     "numerator": 192310,
+     "denominator": 1048575
+    },
+    {
+     "id": "K4",
+     "label": "Different crime types",
+     "value": 33,
+     "unit": "count",
+     "formula": "distinct Primary Type (raw labels)",
+     "numerator": null,
+     "denominator": null,
+     "harmonised_value": 32,
+     "note": "CRIM SEXUAL ASSAULT and CRIMINAL SEXUAL ASSAULT are separate raw labels (handout lists both)."
+    },
+    {
+     "id": "K5",
+     "label": "Crimes in 2016",
+     "value": 268944,
+     "unit": "count",
+     "formula": "rows with Year=2016",
+     "numerator": null,
+     "denominator": null
+    },
+    {
+     "id": "K6",
+     "label": "Avg crimes per month (Apr 2015-Jul 2017)",
+     "value": 22420.964286,
+     "unit": "count/month",
+     "formula": "rows in window / months in window",
+     "numerator": 627787,
+     "denominator": 28
+    },
+    {
+     "id": "K7",
+     "label": "Night-time crime (00:00-05:59)",
+     "value": 17.734163,
+     "unit": "%",
+     "formula": "Time of Day=Night / total",
+     "numerator": 185956,
+     "denominator": 1048575,
+     "sensitivity_value": 15.843775,
+     "sensitivity_note": "Excluding 57,902 records stamped exactly 00:00/12:00 (placeholder-time artefact). Handout-literal value is `value`."
+    },
+    {
+     "id": "K8",
+     "label": "Violent crime",
+     "value": 29.195623,
+     "unit": "%",
+     "formula": "Category=Violent / total",
+     "numerator": 306138,
+     "denominator": 1048575
+    }
+   ]
+  },
+  "method": "Handout definitions, whole dataset.",
+  "charts": [
+   "q05",
+   "q07",
+   "q09"
+  ],
+  "caveat": "Whole-dataset totals mix a dense window with sparse years; see dq_coverage."
+ }
+]

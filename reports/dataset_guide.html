@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Chicago Crime Branch - Beginner dataset guide</title>
+<style>
+@page { size: A4; margin: 16mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; color: #1b1f2a; font-size: 10.6pt; line-height: 1.5; margin: 0; }
+.cover { background: #0a0c12; color: #fff; padding: 34px 32px; border-radius: 14px; margin-bottom: 18px; position: relative; overflow: hidden; }
+.cover::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: repeating-linear-gradient(-45deg, #f5c518 0 12px, #0a0c12 12px 24px); }
+.cover h1 { font-size: 27pt; margin: 4px 0 6px; letter-spacing: -.5px; line-height: 1.1; }
+.cover .tag { font-size: 9pt; letter-spacing: .18em; text-transform: uppercase; color: #f5c518; }
+.cover p { margin: 6px 0 0; color: #c9ceda; }
+h2 { font-size: 15pt; margin: 22px 0 8px; padding-bottom: 5px; border-bottom: 3px solid #f5c518; page-break-after: avoid; }
+h3 { font-size: 11.5pt; margin: 14px 0 4px; color: #1d4fa6; page-break-after: avoid; }
+p { margin: 4px 0 6px; } ul, ol { margin: 4px 0 8px; padding-left: 20px; } li { margin: 2px 0; }
+.q { background: #f4f6fb; border-left: 4px solid #3987e5; padding: 7px 11px; margin: 9px 0 3px; font-weight: 600; border-radius: 0 8px 8px 0; page-break-after: avoid; }
+.a { margin: 0 0 6px 15px; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 9.6pt; page-break-inside: auto; }
+th, td { border: 1px solid #d6dbe6; padding: 5px 8px; text-align: left; vertical-align: top; }
+th { background: #0a0c12; color: #fff; font-weight: 600; } tr:nth-child(even) td { background: #f7f8fc; }
+tr { page-break-inside: avoid; }
+.box { border: 1.5px dashed #c98500; background: #fffaf0; padding: 9px 13px; border-radius: 10px; margin: 10px 0; }
+.pipe { font-family: Consolas, monospace; background: #0a0c12; color: #e8ecf5; padding: 12px 16px; border-radius: 10px; font-size: 9.5pt; white-space: pre; line-height: 1.45; }
+.pill { display: inline-block; background: #f5c518; color: #0a0c12; font-weight: 700; padding: 1px 8px; border-radius: 6px; font-size: 9pt; }
+.foot { margin-top: 20px; color: #6b7285; font-size: 9pt; text-align: center; border-top: 1px solid #d6dbe6; padding-top: 8px; }
+.tech { background: #eef2f9; border: 1px solid #d3dcee; border-radius: 8px; padding: 6px 10px; margin: 5px 0 4px; font-size: 9.2pt; color: #2a3350; page-break-inside: avoid; }
+code { font-family: Consolas, monospace; font-size: 8.9pt; background: #e8ecf5; padding: 0 3px; border-radius: 3px; color: #1d3a7a; }
+.pipe code { background: none; color: inherit; padding: 0; }
+</style></head>
+<body>
+<div class="cover">
+  <div class="tag">Beginner's guide · Team Moleculens</div>
+  <h1>Understanding our dataset<br>from zero</h1>
+  <p>What the data is · what every column means · data types · what was wrong · how we fixed it</p>
+  <p style="font-size:9.5pt">Written in simple words. No coding knowledge needed.</p>
+</div>
+
+<h2>1. What is a "dataset"? (start here)</h2>
+<p>Think of a dataset as <b>one giant Excel sheet</b>.</p>
+<ul>
+<li>Each <b>row</b> is <b>one thing</b>. Here, one row = <b>one crime report</b> written by the Chicago police.</li>
+<li>Each <b>column</b> is <b>one fact</b> about that thing: when it happened, what type of crime, whether someone was arrested, and so on.</li>
+</ul>
+<div class="box"><b>Example of one row, in words:</b> "Report number 13311263 · happened on a Friday at 3:39 AM · type: a theft-like category · place: a residence · an arrest was made · police district 10 · year 2022."</div>
+
+<h2>2. Our dataset at a glance</h2>
+<table>
+<tr><th>Question</th><th>Answer</th></tr>
+<tr><td>What is it?</td><td>Police crime reports from Chicago, USA</td></tr>
+<tr><td>Where did we get it?</td><td>Given to us by the TECHVERSE organisers as an Excel file called <code>Crime Dataset.xlsx</code> (about 150 MB). It looks like the City of Chicago's public "Crimes – 2001 to Present" data, but we could not confirm that, so we say "appears to be".</td></tr>
+<tr><td>How many rows?</td><td><b>1,048,575</b> (about one million crime reports)</td></tr>
+<tr><td>How many columns?</td><td><b>22</b> in the original file. After our work: <b>33</b> (we added helper columns and removed a few).</td></tr>
+<tr><td>What years?</td><td>2001 to 2026 (up to 26 Sep 2026)</td></tr>
+<tr><td>Is it complete?</td><td>No. It has exactly Excel's row limit, so it is a <b>slice</b> of a bigger table. Only two periods are well filled: <b>Apr 2015–Jul 2017</b> and <b>Oct 2025–Aug 2026</b>. Other years have only a few hundred reports a month.</td></tr>
+<tr><td>Did we change the original?</td><td><b>No.</b> We only read it. A digital fingerprint (SHA-256) proves it is unchanged.</td></tr>
+</table>
+
+<h2>3. Data types explained simply</h2>
+<p>A "data type" tells the computer <b>what kind of thing</b> a value is, so it knows what it can do with it (add it, sort it, draw it on a map…).</p>
+<table>
+<tr><th>Type</th><th>Plain meaning</th><th>Example</th><th>Why it matters</th></tr>
+<tr><td><b>Integer (whole number)</b></td><td>A number with no decimals</td><td>13311263, 2022, district 10</td><td>You can count and add them. (But a district number is a <i>label</i>: averaging district 10 and 12 makes no sense.)</td></tr>
+<tr><td><b>Decimal (float)</b></td><td>A number with decimals</td><td>latitude 41.7626</td><td>Used for map positions</td></tr>
+<tr><td><b>Text (string)</b></td><td>Letters and symbols</td><td>"THEFT", "STREET", "JG503434"</td><td>Used for names and categories</td></tr>
+<tr><td><b>True / False (boolean)</b></td><td>Yes or no</td><td>Arrest = True</td><td>Perfect for "was there an arrest?"; percentages come from counting Trues</td></tr>
+<tr><td><b>Date-time</b></td><td>A real calendar date and time</td><td>2022-07-29 03:39:00</td><td>Lets us pull out hour, weekday, month, season</td></tr>
+<tr><td><b>Category</b></td><td>A text column with only a few possible values</td><td>time of day: Night / Morning / Afternoon / Evening</td><td>Easy to group and count</td></tr>
+<tr><td><b>Missing value (null / NaN)</b></td><td>"We don't know"</td><td>an empty cell</td><td>Must never be treated as zero! (see section 7)</td></tr>
+</table>
+<div class="box"><b>Why we care:</b> in the raw file, some columns had a <b>mix</b> of types (some cells text, some real dates; some numbers, some letters). Mixed types cause silent mistakes, so fixing them was step one.</div>
+
+<h2>4. Every original column explained</h2>
+<p><b>How to read the table:</b> "Raw type" is how the column arrived. "Clean type" is what it is after our cleaning. "Missing" is how many empty cells it had. "Unique" is how many different values it contains.</p>
+<table style="font-size:8.6pt">
+<tr><th>Column</th><th>What it means (simple)</th><th>Raw type → Clean type</th><th>Example</th><th>Unique</th><th>Missing</th><th>Problems and what we did</th></tr>
+<tr><td><b>ID</b></td><td>A unique number for each report (like a roll number)</td><td>Integer → Integer</td><td>13311263</td><td>1,048,575</td><td>0</td><td>All different. No duplicates. Nothing to fix.</td></tr>
+<tr><td><b>Case Number</b></td><td>The police case code</td><td>Text → Text</td><td>JG503434</td><td>1,048,562</td><td>0</td><td>13 repeats (one case, several offences, different IDs). Kept: they are real separate reports.</td></tr>
+<tr><td><b>Date</b></td><td>When the crime happened</td><td><b>Mixed</b> text + Excel date → Date-time</td><td>2022-07-29 03:39</td><td>536,706</td><td>0</td><td><b>Biggest problem.</b> 424,638 dates had month and day swapped by Excel. We swapped them back (section 6, step 2).</td></tr>
+<tr><td><b>Block</b></td><td>Street block, partly hidden for privacy</td><td>Text → Text (upper case)</td><td>023XX S TROY ST</td><td>40,096</td><td>0</td><td>Spaces trimmed, capitals made uniform.</td></tr>
+<tr><td><b>IUCR</b></td><td>Illinois crime code (a number-like code)</td><td>Mixed number/text → Text</td><td>1582</td><td>393</td><td>0</td><td>Mixed types made into text so no code is changed.</td></tr>
+<tr><td><b>Primary Type</b></td><td>Main crime category</td><td>Text → Text (upper case)</td><td>THEFT, BATTERY</td><td>33</td><td>0</td><td>Two labels mean the same offence (see step 4). Raw kept for handout numbers.</td></tr>
+<tr><td><b>Description</b></td><td>More detail about the crime</td><td>Text → Text</td><td>(detail text)</td><td>517</td><td>0</td><td>Trimmed only.</td></tr>
+<tr><td><b>Location Description</b></td><td>Type of place</td><td>Text → Text</td><td>STREET, RESIDENCE</td><td>168 (+UNKNOWN)</td><td><b>8,337</b></td><td>Empty cells filled with the word <b>UNKNOWN</b>.</td></tr>
+<tr><td><b>Arrest</b></td><td>Was someone arrested?</td><td>True/False → True/False</td><td>True</td><td>2</td><td>0</td><td>Clean. 214,846 are True.</td></tr>
+<tr><td><b>Domestic</b></td><td>Was it domestic-related?</td><td>True/False → True/False</td><td>False</td><td>2</td><td>0</td><td>Clean. 192,310 are True.</td></tr>
+<tr><td><b>Beat</b></td><td>The smallest police patrol area</td><td>Integer → Integer</td><td>1033</td><td>306</td><td>0</td><td>It is a label, not a quantity.</td></tr>
+<tr><td><b>District</b></td><td>Police district (bigger than a beat)</td><td>Integer → Integer</td><td>10</td><td>24</td><td>0</td><td>Includes odd codes 31 and 61 (very few records). Kept, but ignored in rate rankings.</td></tr>
+<tr><td><b>Ward</b></td><td>City ward (political area)</td><td>Decimal → Nullable integer</td><td>25</td><td>51</td><td><b>16,478</b></td><td>Left missing. Not needed for handout metrics.</td></tr>
+<tr><td><b>Community Area</b></td><td>One of Chicago's 77 neighbourhood areas (numeric code)</td><td>Decimal → Nullable integer</td><td>30</td><td>78</td><td><b>16,505</b></td><td>2,616 cells said "0", which is not a real area: changed to missing. Now 19,121 missing.</td></tr>
+<tr><td><b>FBI Code</b></td><td>The FBI's crime classification</td><td>Mixed → Text</td><td>17, 08B</td><td>26</td><td>0</td><td>Mixed number/text made into text.</td></tr>
+<tr><td><b>X Coordinate / Y Coordinate</b></td><td>Map position in a flat map system (feet)</td><td>Decimal → Decimal</td><td>1169903</td><td>~62k / ~98k</td><td><b>327,690</b></td><td>Left missing. 16 impossible points blanked.</td></tr>
+<tr><td><b>Year</b></td><td>The year of the crime</td><td>Integer → Integer</td><td>2022</td><td>26</td><td>0</td><td>Used as a <b>test</b>: repaired Date's year must equal it (it does, 100%).</td></tr>
+<tr><td><b>Updated On</b></td><td>When the record was last changed</td><td><b>Mixed</b> text + date → Date-time (only used for checking)</td><td>04/18/2024 03:40</td><td>7,049</td><td>0</td><td>Same swap problem. Used only to prove the Date repair; not kept.</td></tr>
+<tr><td><b>Latitude / Longitude</b></td><td>Map position in degrees</td><td>Decimal → Decimal</td><td>41.76, −87.65</td><td>~242k</td><td><b>327,690</b></td><td>Left missing (31.3%). 16 points outside Chicago blanked. A flag <code>has_coords</code> marks which rows have a position.</td></tr>
+<tr><td><b>Location</b></td><td>Latitude and longitude written together as text</td><td>Text → <i>dropped</i></td><td>(41.76, −87.65)</td><td>–</td><td>327,690</td><td>Duplicate of Latitude/Longitude, so the column was removed (no rows removed).</td></tr>
+</table>
+
+<h2>5. New columns we created (13)</h2>
+<p>We build these from existing columns so we can answer the handout questions. They follow the handout's rules exactly.</p>
+<table>
+<tr><th>New column</th><th>Type</th><th>How it is made</th><th>Example</th></tr>
+<tr><td><b>Primary Type Harmonised</b></td><td>Text</td><td>Primary Type with two labels merged into one (32 types)</td><td>CRIMINAL SEXUAL ASSAULT</td></tr>
+<tr><td><b>hour</b></td><td>Whole number 0–23</td><td>Hour of the Date</td><td>3</td></tr>
+<tr><td><b>month</b></td><td>Whole number 1–12</td><td>Month of the Date</td><td>7</td></tr>
+<tr><td><b>month_start</b></td><td>Date</td><td>First day of that month (the handout's "Month Start")</td><td>2022-07-01</td></tr>
+<tr><td><b>day</b></td><td>Date</td><td>The calendar day (time removed)</td><td>2022-07-29</td></tr>
+<tr><td><b>day_of_week</b></td><td>Text</td><td>Weekday name</td><td>Friday</td></tr>
+<tr><td><b>dow</b></td><td>Whole number 0–6</td><td>Weekday number, 0 = Monday</td><td>4</td></tr>
+<tr><td><b>is_weekend</b></td><td>True/False</td><td>True for Saturday and Sunday</td><td>False</td></tr>
+<tr><td><b>time_of_day</b></td><td>Category (4)</td><td>Hours 0–5 Night · 6–11 Morning · 12–17 Afternoon · 18–23 Evening</td><td>Night</td></tr>
+<tr><td><b>season</b></td><td>Category (4)</td><td>Dec–Feb Winter · Mar–May Spring · Jun–Aug Summer · Sep–Nov Fall</td><td>Summer</td></tr>
+<tr><td><b>crime_category</b></td><td>Category (3)</td><td>Violent / Property / Other, using the handout's lists</td><td>Other</td></tr>
+<tr><td><b>has_coords</b></td><td>True/False</td><td>True if the row has a map position</td><td>False</td></tr>
+<tr><td><b>default_time</b></td><td>True/False</td><td>True if the time is exactly 00:00 or 12:00 (often a "time unknown" default)</td><td>False</td></tr>
+</table>
+<p>Two temporary tag columns (<code>Date__src</code> and <code>Updated On__src</code>) are used only during the date repair and then removed.</p>
+
+<h2>6. Preprocessing: step by step in simple words</h2>
+<p><b>Preprocessing</b> means <i>getting the data ready</i> before analysis, like washing and chopping vegetables before cooking. Our golden rule: <b>change as little as possible, write down every change, delete nothing.</b></p>
+
+<h3>Step 1: Load the file safely</h3>
+<ul>
+<li><b>What was wrong:</b> the Excel file is huge (150 MB) and some columns mix numbers and text.</li>
+<li><b>What we did:</b> opened it in read-only mode (so it cannot be changed), turned mixed columns into plain text, and saved a fast copy for later use.</li>
+<li><b>Proof it was untouched:</b> a fingerprint (SHA-256) taken at the start matches the one at the end.</li>
+</ul>
+
+<h3>Step 2: Fix the dates (the biggest problem)</h3>
+<ul>
+<li><b>What was wrong:</b> Excel thought some dates were written <i>day/month</i> instead of <i>month/day</i>. So "03/01/2023" (March 1st) was read as "3 January". This only happened when the day was 12 or lower, because a day like 29 cannot be a month.</li>
+<li><b>How we found it:</b> 623,937 date cells were plain text with days always 13 or more (always correct). 424,638 cells were real Excel dates with days always 12 or less (the swapped ones).</li>
+<li><b>What we did:</b> for those 424,638 cells we swapped the month and day back.</li>
+<li><b>Simple before → after:</b> 2023-03-01 (wrong) → 2023-01-03 (correct).</li>
+<li><b>How we know it worked:</b>
+<ul>
+<li>The year still equals the Year column in <b>100%</b> of rows.</li>
+<li>Records "updated before they happened" dropped from <b>3.3% to 0%</b>.</li>
+<li>The monthly crime chart matches the competition handout exactly (28 months, lowest 18,710 in Feb 2016).</li>
+</ul></li>
+</ul>
+
+<h3>Step 3: Tidy the text</h3>
+<ul>
+<li><b>What was wrong:</b> extra spaces and inconsistent capitals could make "Theft" and "THEFT " look like two different categories.</li>
+<li><b>What we did:</b> removed spaces at the ends and made text upper case in Primary Type, Description, Location Description and Block.</li>
+</ul>
+
+<h3>Step 4: Merge two labels for one offence</h3>
+<ul>
+<li><b>What was wrong:</b> <code>CRIM SEXUAL ASSAULT</code> and <code>CRIMINAL SEXUAL ASSAULT</code> are the same offence under two names (a renaming).</li>
+<li><b>What we did:</b> kept the original column untouched (the handout counts 33 types and lists both names as violent) and added a second column with them merged (32 types) for deeper analysis.</li>
+</ul>
+
+<h3>Step 5: Handle map positions</h3>
+<ul>
+<li><b>Missing positions:</b> 327,690 rows (31.3%) have no latitude or longitude. We did <b>not guess</b> them. We flagged them with <code>has_coords</code> and draw maps only from rows that have a position.</li>
+<li><b>Impossible positions:</b> 16 points were outside Chicago (for example, in another state). We set them to missing.</li>
+<li><b>Area codes:</b> a community area of 0 does not exist, so 2,616 zeros became missing.</li>
+</ul>
+
+<h3>Step 6: Check for duplicates</h3>
+<ul>
+<li>Duplicate IDs: <b>0</b>. Fully repeated rows: <b>0</b>.</li>
+<li>13 repeated case numbers were kept because they have different IDs (real separate reports).</li>
+</ul>
+
+<h3>Step 7: Spot suspicious values, but do not delete them</h3>
+<ul>
+<li><b>"Time unknown" stamps:</b> 5.5% of reports are stamped exactly 00:00 or 12:00, far more than a real clock would give. We flagged them (<code>default_time</code>). The handout's night-time KPI keeps them (<b>17.7%</b>); we also show the number without them (<b>15.8%</b>).</li>
+<li><b>Too many on the 1st of the month:</b> some crime types have far too many reports dated the 1st (sex offences: 14.4% instead of about 3.3%). This probably means the true date was unknown. We flag it as a likely explanation, not a proven fact.</li>
+</ul>
+
+<h3>Step 8: Add helper columns</h3>
+<p>We created the 13 columns in section 5 (hour, weekday, season, time of day, crime category, and so on) using the handout's exact definitions.</p>
+
+<h3>Step 9: Test whether the missing data is random</h3>
+<ul>
+<li>In Apr 2015–Jul 2017 only <b>1.7%</b> lack positions, but they are mostly sensitive crime types (sex offence 13.9%, offences involving children 12.6%), probably for privacy.</li>
+<li>In Oct 2025–Aug 2026, <b>99.96%</b> lack positions, so the map uses only the first period.</li>
+</ul>
+
+<h3>Step 10: Save and log everything</h3>
+<p>The cleaned table is saved, and every change with its count is written to <code>cleaning_log.json</code>, so anyone can see exactly what was done.</p>
+
+<h2>7. Missing data: what it is and what we chose</h2>
+<p><b>Missing data</b> = an empty cell: the value is unknown. It is <b>not zero</b>, and it is not an error we can quietly fix.</p>
+<p><b>Three common options:</b></p>
+<table>
+<tr><th>Option</th><th>What it means</th><th>Risk</th><th>Did we use it?</th></tr>
+<tr><td><b>Delete</b> the rows</td><td>Remove rows with gaps</td><td>Changes the totals (the handout needs exactly 1,048,575)</td><td><b>No</b></td></tr>
+<tr><td><b>Fill in</b> (impute)</td><td>Guess a value (average, nearest place…)</td><td>Invents data; the rulebook forbids fabricating data</td><td><b>No</b> (except the word "UNKNOWN" for place)</td></tr>
+<tr><td><b>Leave it and flag it</b></td><td>Keep the gap, count it, and use only rows that have the value</td><td>Fewer rows for that one analysis</td><td><b>Yes</b></td></tr>
+</table>
+<table>
+<tr><th>Column</th><th>Missing</th><th>Our treatment</th></tr>
+<tr><td>Latitude, Longitude, X, Y</td><td>327,690 (31.3%)</td><td>Left empty + flag <code>has_coords</code>; maps use only rows with positions</td></tr>
+<tr><td>Community Area</td><td>16,505 + 2,616 zeros = 19,121</td><td>Left empty (zeros turned into empty)</td></tr>
+<tr><td>Ward</td><td>16,478</td><td>Left empty</td></tr>
+<tr><td>Location Description</td><td>8,337</td><td>Filled with "UNKNOWN" (honest label, keeps the row countable)</td></tr>
+<tr><td>Everything else</td><td>0</td><td>Nothing needed</td></tr>
+</table>
+<div class="box"><b>In one sentence:</b> we never guess, never delete; we either label it UNKNOWN, leave it empty, or flag it, and every chart that depends on it says so.</div>
+
+<h2>8. How to double-check a column yourself (examples)</h2>
+<ul>
+<li><b>Count rows:</b> total rows = 1,048,575 → this is KPI K1.</li>
+<li><b>Count True values:</b> Arrest = True appears 214,846 times → ÷ 1,048,575 = 20.49% arrest rate.</li>
+<li><b>Count different values:</b> Primary Type has 33 different values → KPI K4.</li>
+<li><b>Count empties:</b> Ward has 16,478 empty cells.</li>
+</ul>
+
+<h2>9. Glossary</h2>
+<table>
+<tr><th>Word</th><th>Meaning</th></tr>
+<tr><td>Row / record</td><td>One crime report</td></tr>
+<tr><td>Column / field</td><td>One fact about each report</td></tr>
+<tr><td>Null / NaN / missing</td><td>An empty, unknown value</td></tr>
+<tr><td>Preprocessing</td><td>Preparing and cleaning data before analysis</td></tr>
+<tr><td>Imputation</td><td>Filling missing values with guesses (we avoid it)</td></tr>
+<tr><td>Duplicate</td><td>The same record appearing twice</td></tr>
+<tr><td>Outlier</td><td>A value far from the others</td></tr>
+<tr><td>Placeholder</td><td>A fake default value used when the real one is unknown</td></tr>
+<tr><td>Flag</td><td>A True/False helper column that marks something</td></tr>
+<tr><td>Harmonise</td><td>Make different labels for the same thing identical</td></tr>
+<tr><td>Parquet</td><td>A fast file format we use to save the data</td></tr>
+<tr><td>SHA-256 checksum</td><td>A digital fingerprint of a file; any change alters it</td></tr>
+<tr><td>KPI</td><td>Key performance indicator: one headline number (we have 8)</td></tr>
+<tr><td>Window A / Window B</td><td>The two well-filled periods: Apr 2015–Jul 2017 and Oct 2025–Aug 2026</td></tr>
+<tr><td>District / Beat</td><td>Police areas; a district contains several beats</td></tr>
+</table>
+
+<h2>10. Ten sentences to say when a judge asks about the data</h2>
+<ol>
+<li>"We used a 1,048,575-row Chicago police crime file given by the organisers; one row is one crime report."</li>
+<li>"It has 22 original columns: IDs, a date, crime type, place, arrest and domestic flags, police areas and map positions."</li>
+<li>"The file looks like a slice of the full city table; only two periods are fully filled."</li>
+<li>"Our main fix was repairing 424,638 dates where Excel had swapped month and day, and we proved it three ways."</li>
+<li>"We did not delete any rows, so totals match the handout exactly."</li>
+<li>"We did not guess missing values: map positions stay empty and are flagged; unknown places are labelled UNKNOWN."</li>
+<li>"We found that missing map positions are not random, so we explain that on the map."</li>
+<li>"We flagged suspicious times (exactly 00:00 or 12:00) and show results with and without them."</li>
+<li>"We built the handout columns (time of day, season, crime category) with the handout's exact rules."</li>
+<li>"Every change is logged and 44 automatic checks confirm the numbers."</li>
+</ol>
+<div class="foot">Chicago Crime Branch · Team Moleculens · Beginner's dataset guide</div>
+
+</body></html>

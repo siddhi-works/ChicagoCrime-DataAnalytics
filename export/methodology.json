@@ -1,0 +1,79 @@
+{
+ "definitions": {
+  "time_of_day": "Night 00:00-05:59, Morning 06:00-11:59, Afternoon 12:00-17:59, Evening 18:00-23:59 (hour of Date).",
+  "season": "Winter Dec-Feb, Spring Mar-May, Summer Jun-Aug, Fall Sep-Nov (by month of Date).",
+  "crime_category": "Violent: ASSAULT, BATTERY, ROBBERY, HOMICIDE, CRIM SEXUAL ASSAULT, CRIMINAL SEXUAL ASSAULT, KIDNAPPING. Property: THEFT, BURGLARY, MOTOR VEHICLE THEFT, CRIMINAL DAMAGE, ARSON. Other: everything else.",
+  "arrest_rate": "Arrest=TRUE rows / all rows in scope."
+ },
+ "windows": {
+  "A": {
+   "start": "2015-04-01",
+   "end_exclusive": "2017-08-01",
+   "records": 627787,
+   "months": 28
+  },
+  "B": {
+   "start": "2025-10-01",
+   "end_exclusive": "2026-09-01",
+   "records": 211787,
+   "months": 11
+  },
+  "method": "Contiguous runs of >=60 days with >=200 records/day (windows.dense_windows), trimmed to whole calendar months. Outside these runs the file holds only 300-900 records/month."
+ },
+ "dense_windows_detected": [
+  {
+   "start": "2015-03-18",
+   "end": "2017-08-07",
+   "days": 874,
+   "records": 642167,
+   "mean_per_day": 734.744851
+  },
+  {
+   "start": "2025-09-28",
+   "end": "2026-09-22",
+   "days": 360,
+   "records": 228073,
+   "mean_per_day": 633.536111
+  }
+ ],
+ "records_outside_windows": 209001,
+ "source": {
+  "file": "Crime Dataset.xlsx",
+  "sheet": "Crimes_-_2001_to_Present",
+  "provenance": "Provided by the competition organisers. Column layout matches the City of Chicago Data Portal dataset 'Crimes - 2001 to Present' (Chicago Police Dept.); confirm before citing as such.",
+  "modified": false
+ },
+ "assumptions": [
+  "Excel-converted Date cells were read day-first and are swapped back (month<->day).",
+  "Handout KPIs use the whole dataset (ground rules); deeper analysis uses the two dense windows.",
+  "CRIM SEXUAL ASSAULT and CRIMINAL SEXUAL ASSAULT are one offence under two labels; merged only in the harmonised column.",
+  "Timestamps at exactly 00:00/12:00 are treated as possible placeholders in sensitivity analyses, never dropped from handout metrics.",
+  "No population or area denominators exist in the data, so no per-capita statements are made.",
+  "p-values are secondary: with n ~ 10^5-10^6 effect sizes and CIs are reported; multiple comparisons use Benjamini-Hochberg FDR."
+ ],
+ "limitations": [
+  "File is a truncated slice (Excel row limit); only two periods are dense.",
+  "Window B has ~0% coordinates; arrest outcomes in recent months may be incomplete.",
+  "Models describe association, not causation."
+ ],
+ "models": {
+  "train_n": 474279,
+  "test_n": 153508,
+  "test_from": "2017-01-01",
+  "auc_logistic": 0.836538,
+  "brier_logistic": 0.103012,
+  "brier_baseline": 0.162232,
+  "bootstrap_reps": 15,
+  "auc_gradient_boosting": 0.864816,
+  "brier_gradient_boosting": 0.094833
+ },
+ "glm": {
+  "holdout_from": "2017-01-01",
+  "holdout_days": 212,
+  "mape_glm": 0.067489,
+  "mape_same_weekday_last_week": 0.082209,
+  "mad_sigma": 1.892233,
+  "holiday_coef": -0.017709
+ },
+ "seed": 42
+}
