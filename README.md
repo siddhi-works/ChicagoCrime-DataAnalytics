@@ -3,6 +3,8 @@
 > ### 🏆 TECHVERSE 2026 · Grand Prize Winner
 > **Ajeenkya DY Patil** · built by **Team Moleculens**
 
+**🌐 Live demo: [chicagocrime-data-analytics.vercel.app](https://chicagocrime-data-analytics.vercel.app/)**
+
 An interactive data story built on **1,048,575 Chicago police crime reports**. A Python pipeline cleans the data and works out every number; a React dashboard lets you explore the results, filter them, map them and ask questions about them.
 
 Everything on screen is computed from the data. Nothing is typed in by hand.
