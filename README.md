@@ -51,11 +51,15 @@ Column types: 4 integer, 6 decimal, 8 text, 2 date-time, 2 boolean. Missing valu
 
 ## Tech stack
 
-**Analysis:** Python, pandas, NumPy, SciPy, scikit-learn, PyArrow, Pydantic
-
-**Dashboard:** React, TypeScript, Vite, Motion, d3, SVG and Canvas
-
-**Hosting:** Vercel
+| Area | Technology |
+|---|---|
+| Analysis | Python 3.13, pandas, NumPy, SciPy, scikit-learn |
+| Data handling | openpyxl, PyArrow (Parquet), Pydantic |
+| Dashboard | React, TypeScript, Vite |
+| Visualisation | Hand-built SVG and Canvas, d3 (scales and shapes) |
+| Motion | Motion (animation library) |
+| Typography | Bricolage Grotesque, Inter, JetBrains Mono |
+| Hosting | Vercel |
 
 ---
 
